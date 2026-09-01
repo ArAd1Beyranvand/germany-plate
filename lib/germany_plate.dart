@@ -1,4 +1,4 @@
-/// Germany's licence plates for the `plate_number` / `core_plate` library.
+/// Germany's licence plates for the `core_plate` library.
 ///
 /// A [PlateCountry], the standard EU car [PlateSpec] with its two round
 /// stickers, and the advisory [GermanPlateValidator]. Nothing here knows about

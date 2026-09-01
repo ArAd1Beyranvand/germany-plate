@@ -19,7 +19,7 @@
 /// composes their own [PlateValidator] with their own list.
 library;
 
-import 'package:plate_number/plate_number.dart';
+import 'package:core_plate/core_plate.dart';
 
 /// Nationwide-forbidden letter pairs (Nazi-organisation abbreviations) plus
 /// widely-documented state-level additions and generically-offensive pairs.
