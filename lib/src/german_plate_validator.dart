@@ -37,15 +37,12 @@ const Set<String> _forbiddenNumbers = {
   '88', '18', '14',
 };
 
-/// Retained for one release so consumers of the old result type keep
-/// compiling. [GermanPlateValidationResult] is now just [PlateValidation].
-typedef GermanPlateValidationResult = PlateValidation;
-
 /// Validates a German car-plate district code + identifier pair.
 ///
 /// Answers a question — is this plate valid? — and never prevents input. The
-/// per-keystroke `barredNext*` helpers this class used to expose are removed;
-/// a validator no longer bars keys (see docs/split/PLAN.md §1).
+/// per-keystroke `barredNext*` helpers and the `GermanPlateValidationResult`
+/// typedef this class used to expose are removed; a validator no longer bars
+/// keys (see docs/split/PLAN.md §1).
 class GermanPlateValidator extends PlateValidator {
   const GermanPlateValidator();
 

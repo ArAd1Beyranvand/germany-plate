@@ -1,6 +1,6 @@
 # germany_plate
 
-Germany's licence plates for the [`core_plate`](../core-plate) library: the
+Germany's licence plates for the [`core_plate`](https://pub.dev/packages/core_plate) library: the
 country panel with the flag SVG this package ships, the standard EU car spec with
 its inspection sticker and state seal, and the advisory `GermanPlateValidator`.
 
@@ -11,7 +11,7 @@ why, and `core-plate/docs/split/PLAN.md` §6.8 for the decision.
 
 ## Depends on
 
-`core_plate` (by path, `../core-plate`), for `PlateSpec`, `PlateCountry` and
+`core_plate` (`^0.1.0`), for `PlateSpec`, `PlateCountry` and
 `PlateValidator`.
 
 ## Does not depend on

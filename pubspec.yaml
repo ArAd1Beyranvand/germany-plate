@@ -3,10 +3,6 @@ description: "Germany's licence plates for the core_plate library — the countr
 version: 0.1.0
 homepage: https://github.com/ArAdBey/plate-number
 
-# Path-only, not published (PLAN.md §6.6, settled in P9). The core dependency
-# resolves against the sibling checkout `../core-plate`.
-publish_to: none
-
 environment:
   sdk: '>=3.10.0 <4.0.0'
   flutter: ">=1.17.0"
@@ -15,8 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   # The country-neutral engine.
-  core_plate:
-    path: ../core-plate
+  core_plate: ^0.1.0
 
 dev_dependencies:
   flutter_lints: ^6.0.0
@@ -31,3 +26,11 @@ flutter:
     - assets/de_inspection_sticker.png
     - assets/de_state_seal.png
     - assets/flags/Flag_of_Germany.svg
+
+# Local development only: resolve core_plate from the sibling checkout until it
+# is published. pub.dev ignores dependency_overrides for consumers — they get
+# the versioned `core_plate: ^0.1.0` above. Safe to delete once core_plate is
+# on pub.dev.
+dependency_overrides:
+  core_plate:
+    path: ../core-plate
