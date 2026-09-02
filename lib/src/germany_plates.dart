@@ -24,20 +24,44 @@ class GermanPlates {
     textDirection: TextDirection.ltr,
     slots: [
       // District code, e.g. "DA".
-      PlateSlot(alphabet: PlateAlphabet.latinUppercase, box: PlateBox(64, 17, 52, 76)),
-      PlateSlot(alphabet: PlateAlphabet.latinUppercase, box: PlateBox(122, 17, 52, 76)),
+      PlateSlot(
+        alphabet: PlateAlphabet.latinUppercase,
+        box: PlateBox(64, 17, 52, 76),
+      ),
+      PlateSlot(
+        alphabet: PlateAlphabet.latinUppercase,
+        box: PlateBox(122, 17, 52, 76),
+      ),
       // Identifier: one letter then the serial digits, e.g. "X1953".
-      PlateSlot(alphabet: PlateAlphabet.latinUppercase, box: PlateBox(230, 17, 52, 76)),
-      PlateSlot(alphabet: PlateAlphabet.latinDigits, box: PlateBox(288, 17, 46, 76)),
-      PlateSlot(alphabet: PlateAlphabet.latinDigits, box: PlateBox(338, 17, 46, 76)),
-      PlateSlot(alphabet: PlateAlphabet.latinDigits, box: PlateBox(388, 17, 46, 76)),
-      PlateSlot(alphabet: PlateAlphabet.latinDigits, box: PlateBox(438, 17, 46, 76)),
+      PlateSlot(
+        alphabet: PlateAlphabet.latinUppercase,
+        box: PlateBox(230, 17, 52, 76),
+      ),
+      PlateSlot(
+        alphabet: PlateAlphabet.latinDigits,
+        box: PlateBox(288, 17, 46, 76),
+      ),
+      PlateSlot(
+        alphabet: PlateAlphabet.latinDigits,
+        box: PlateBox(338, 17, 46, 76),
+      ),
+      PlateSlot(
+        alphabet: PlateAlphabet.latinDigits,
+        box: PlateBox(388, 17, 46, 76),
+      ),
+      PlateSlot(
+        alphabet: PlateAlphabet.latinDigits,
+        box: PlateBox(438, 17, 46, 76),
+      ),
     ],
     decals: [
       // Stacked in the gap between the district code and the identifier: the
       // orange TÜV inspection sticker on top, the federal-state seal below.
       PlateDecal(
-        image: AssetImage('assets/de_inspection_sticker.png', package: 'germany_plate'),
+        image: AssetImage(
+          'assets/de_inspection_sticker.png',
+          package: 'germany_plate',
+        ),
         box: PlateBox(184, 14, 38, 38),
       ),
       PlateDecal(

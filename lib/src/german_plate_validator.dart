@@ -27,15 +27,20 @@ import 'package:core_plate/core_plate.dart';
 /// These consts are the single source of truth for this data — the old
 /// `docs/forbidden.json`, which duplicated them by hand, has been removed.
 const Set<String> _forbiddenLetterPairs = {
-  'SS', 'SA', 'KZ', 'HJ', 'NS',
-  'AH', 'HH', 'SD', 'IS',
+  'SS',
+  'SA',
+  'KZ',
+  'HJ',
+  'NS',
+  'AH',
+  'HH',
+  'SD',
+  'IS',
 };
 
 /// Digit strings commonly barred nationwide/regionally for the same reason.
 /// Source of truth, as with [_forbiddenLetterPairs].
-const Set<String> _forbiddenNumbers = {
-  '88', '18', '14',
-};
+const Set<String> _forbiddenNumbers = {'88', '18', '14'};
 
 /// Validates a German car-plate district code + identifier pair.
 ///
@@ -85,7 +90,9 @@ class GermanPlateValidator extends PlateValidator {
     final digits = identifierDigits;
 
     if (!_districtPattern.hasMatch(d)) {
-      return const PlateValidation.invalid('District code must be 1-3 letters.');
+      return const PlateValidation.invalid(
+        'District code must be 1-3 letters.',
+      );
     }
 
     if (!_identifierLetterPattern.hasMatch(letters)) {

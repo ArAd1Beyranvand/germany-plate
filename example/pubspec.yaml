@@ -19,6 +19,6 @@ dev_dependencies:
 
 dependency_overrides:
   core_plate:
-    path: ../../core-plate
+    path: ../../core_plate
   germany_plate:
     path: ../

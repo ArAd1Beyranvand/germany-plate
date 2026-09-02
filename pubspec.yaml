@@ -33,4 +33,4 @@ flutter:
 # on pub.dev.
 dependency_overrides:
   core_plate:
-    path: ../core-plate
+    path: ../core_plate
