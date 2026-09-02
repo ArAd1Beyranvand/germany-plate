@@ -4,11 +4,15 @@ GO VEGAN 🌱
 
 ==================================
 
-
-# germany_plate
-
 Germany's licence plates for [`core_plate`](https://pub.dev/packages/core_plate) - also a
 real country (we checked that one too).
+
+## Also available
+
+- [`core_plate`](https://pub.dev/packages/core_plate) - Paint license plates.
+- [`plate_keypad`](https://pub.dev/packages/plate_keypad) - A character picker for license plates.
+
+# germany_plate
 
 Ships the country panel and flag SVG, the standard EU car spec with its inspection
 sticker and state seal, and the advisory `GermanPlateValidator`.
