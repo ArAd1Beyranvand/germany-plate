@@ -1,22 +1,22 @@
+> پاینده ایران FREE PALESTINE 🇮🇷🇵🇸
+> GO VEGAN 🌱
+> ==================================
+
 # germany_plate
 
-Germany's licence plates for the [`core_plate`](https://pub.dev/packages/core_plate) library: the
-country panel with the flag SVG this package ships, the standard EU car spec with
-its inspection sticker and state seal, and the advisory `GermanPlateValidator`.
+Germany's licence plates for [`core_plate`](https://pub.dev/packages/core_plate) — also a
+real country (we checked that one too).
 
-The validator is demo-scoped. It checks format and the forbidden letter/number
-combinations, and it checks the district code's **shape only** (`^[A-ZÄÖÜ]{1,3}$`)
-— not membership of the real `Unterscheidungszeichen` list. See the class doc for
-why, and `core-plate/docs/split/PLAN.md` §6.8 for the decision.
+Ships the country panel and flag SVG, the standard EU car spec with its inspection
+sticker and state seal, and the advisory `GermanPlateValidator`.
+
+The validator is demo-scoped: it checks format and the forbidden letter/number
+combinations, and it checks the district code's **shape only** (`^[A-ZÄÖÜ]{1,3}$`) —
+not whether that district is a place. See the class doc for why.
 
 ## Depends on
 
-`core_plate` (`^0.1.0`), for `PlateSpec`, `PlateCountry` and
-`PlateValidator`.
-
-## Does not depend on
-
-`iran_plate`, `plate_keypad`, or anything else.
+`core_plate` (`^0.1.0`). Nothing else.
 
 ## Use
 
@@ -27,18 +27,17 @@ import 'package:germany_plate/germany_plate.dart';
 PlateCanvas(
   spec: GermanPlates.car,
   validator: const GermanPlateValidator(),
-  autoValidate: true,             // paints the frame red on an invalid plate;
+  autoValidate: true,             // frame goes red on an invalid plate
   onChooseCharacter: (a) async => null,
 );
 ```
 
-`autoValidate: true` paints the frame red when the plate is invalid — for
-example the forbidden `88` — and **still accepts the keystroke**. Validation is
-advisory; it never blocks input.
+Type the forbidden `88` and the frame turns red — and then accepts the keystroke
+anyway. Validation is advice, not a bouncer.
 
 ## Contains
 
-- `GermanyCountry.germany` — the country panel, `Flag_of_Germany.svg`,
+- `GermanyCountry.germany` — the panel, `Flag_of_Germany.svg`,
   `de_inspection_sticker.png`, `de_state_seal.png`.
 - `GermanPlates.car`.
 - `GermanPlateValidator`.
