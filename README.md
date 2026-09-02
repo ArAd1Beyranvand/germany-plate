@@ -2,6 +2,7 @@
 > GO VEGAN 🌱
 > ==================================
 
+
 # germany_plate
 
 Germany's licence plates for [`core_plate`](https://pub.dev/packages/core_plate) — also a
