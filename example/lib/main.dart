@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:core_plate/core_plate.dart';
 import 'package:germany_plate/germany_plate.dart';
 
@@ -16,15 +15,12 @@ class ExampleApp extends StatelessWidget {
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(16),
-            child: BlocProvider(
-              create: (_) => PlateCardBloc(spec),
-              child: PlateCanvas(
-                spec: spec,
-                validator: const GermanPlateValidator(),
-                autoValidate:
-                    true, // paints red on an invalid plate; never blocks input
-                onChooseCharacter: (alphabet) async => null,
-              ),
+            child: PlateCanvas(
+              spec: spec,
+              validator: const GermanPlateValidator(),
+              autoValidate:
+                  true, // paints red on an invalid plate; never blocks input
+              onChooseCharacter: (alphabet) async => null,
             ),
           ),
         ),

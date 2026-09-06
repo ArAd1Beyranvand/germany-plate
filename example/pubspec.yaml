@@ -10,7 +10,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_bloc: ^9.1.1
   core_plate: ^0.1.0
   germany_plate: ^0.1.0
 
@@ -21,6 +20,10 @@ dev_dependencies:
 # checkout until it is published on pub.dev. A fresh consumer copying this
 # example deletes this block and relies on the versioned dependencies above.
 dependency_overrides:
+  # Local development only: this stage's PlateController/PlateView API is not
+  # published yet, so core_plate resolves to the sibling checkout.
+  core_plate:
+    path: ../../core_plate
   germany_plate:
     path: ../
 

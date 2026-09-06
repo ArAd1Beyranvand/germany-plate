@@ -44,18 +44,17 @@ packages:
   core_plate:
     dependency: "direct main"
     description:
-      name: core_plate
-      sha256: a10053a020786ae5c052527af9b263bc41c0862ca11bfe66a324ef742b9ce74a
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.0"
+      path: "../../core_plate"
+      relative: true
+    source: path
+    version: "0.2.0"
   flutter:
     dependency: "direct main"
     description: flutter
     source: sdk
     version: "0.0.0"
   flutter_bloc:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: flutter_bloc
       sha256: cf51747952201a455a1c840f8171d273be009b932c75093020f9af64f2123e38
