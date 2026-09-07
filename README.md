@@ -10,6 +10,10 @@ real country (we checked that one too).
 ## Also available
 
 - [`core_plate`](https://pub.dev/packages/core_plate) - Paint license plates.
+- [`core_plate_bloc`](https://pub.dev/packages/core_plate_bloc) - The optional bloc layer for `core_plate`.
+- [`iran_plate`](https://pub.dev/packages/iran_plate) - Iran's plates.
+- [`palestine_plate`](https://pub.dev/packages/palestine_plate) - Palestine's plates.
+- [`yemen_plate`](https://pub.dev/packages/yemen_plate) - Yemen's plates.
 - [`plate_keypad`](https://pub.dev/packages/plate_keypad) - A character picker for license plates.
 
 # germany_plate
