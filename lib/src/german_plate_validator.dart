@@ -11,12 +11,10 @@
 ///
 /// In particular the district code is checked for *shape* (1-3 letters) and
 /// not for membership of the real `Unterscheidungszeichen` list, so "QQ"
-/// validates although no authority issues it. That is deliberate and is the
-/// same demo scope: a curated `docs/districts.json` of ~150 codes existed
-/// unused in the core repo and was deleted in P8 of the split rather than
-/// wired in, because keeping it accurate as districts change is a promise this
-/// package does not make. A consumer who needs strict district validation
-/// composes their own [PlateValidator] with their own list.
+/// validates although no authority issues it. That is deliberate: this package
+/// does not promise a district list stays accurate as districts change. A
+/// consumer who needs strict district validation composes their own
+/// [PlateValidator] with their own list.
 library;
 
 import 'package:core_plate/core_plate.dart';
@@ -24,8 +22,7 @@ import 'package:core_plate/core_plate.dart';
 /// Nationwide-forbidden letter pairs (Nazi-organisation abbreviations) plus
 /// widely-documented state-level additions and generically-offensive pairs.
 ///
-/// These consts are the single source of truth for this data — the old
-/// `docs/forbidden.json`, which duplicated them by hand, has been removed.
+/// These consts are the single source of truth for this data.
 const Set<String> _forbiddenLetterPairs = {
   'SS',
   'SA',
@@ -45,9 +42,8 @@ const Set<String> _forbiddenNumbers = {'88', '18', '14'};
 /// Validates a German car-plate district code + identifier pair.
 ///
 /// Answers a question — is this plate valid? — and never prevents input. The
-/// per-keystroke `barredNext*` helpers and the `GermanPlateValidationResult`
-/// typedef this class used to expose are removed; a validator no longer bars
-/// keys (see docs/split/PLAN.md §1).
+/// This class exposes no per-keystroke `barredNext*` helpers and no result
+/// typedef — a validator reports a verdict; it does not bar keys.
 class GermanPlateValidator extends GatedPlateValidator {
   const GermanPlateValidator();
 
