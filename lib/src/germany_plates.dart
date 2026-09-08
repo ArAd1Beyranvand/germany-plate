@@ -12,49 +12,48 @@ class GermanPlates {
   /// seal), then the identifier's Latin letter and serial digits — read
   /// left-to-right, with no dividers and no printed labels. The stickers are
   /// [PlateDecal]s that sit in the gap between the two character groups.
-  static const PlateSpec car = PlateSpec(
+  /// `final`, not `const`: the serial is built by [plateRegister], and a `const`
+  /// constructor cannot run a loop. Initialised lazily, once per isolate, and
+  /// [PlateSpec] equality is over `id` alone — nothing here depended on const
+  /// canonicalisation.
+  static final PlateSpec car = PlateSpec(
     id: 'de.car',
     country: GermanyCountry.germany,
     canvasWidth: 520,
     canvasHeight: 110,
-    panel: PlatePanel(
+    panel: const PlatePanel(
       // Overlap the border on the three touching edges — see IranPlates.car.
       box: PlateBox(0, 0, 56.4, 110),
     ),
     textDirection: TextDirection.ltr,
     slots: [
-      // District code, e.g. "DA".
-      PlateSlot(
+      // District code, e.g. "DA". Two cells is not a register worth naming.
+      const PlateSlot(
         alphabet: PlateAlphabet.latinUppercase,
         box: PlateBox(64, 17, 52, 76),
       ),
-      PlateSlot(
+      const PlateSlot(
         alphabet: PlateAlphabet.latinUppercase,
         box: PlateBox(122, 17, 52, 76),
       ),
-      // Identifier: one letter then the serial digits, e.g. "X1953".
-      PlateSlot(
+      // Identifier: one letter, then the serial digits, e.g. "X1953". The
+      // letter is wider than a digit and sits on its own pitch, so it stays a
+      // literal; the four digits are one register at pitch 50.
+      const PlateSlot(
         alphabet: PlateAlphabet.latinUppercase,
         box: PlateBox(230, 17, 52, 76),
       ),
-      PlateSlot(
+      ...plateRegister(
         alphabet: PlateAlphabet.latinDigits,
-        box: PlateBox(288, 17, 46, 76),
-      ),
-      PlateSlot(
-        alphabet: PlateAlphabet.latinDigits,
-        box: PlateBox(338, 17, 46, 76),
-      ),
-      PlateSlot(
-        alphabet: PlateAlphabet.latinDigits,
-        box: PlateBox(388, 17, 46, 76),
-      ),
-      PlateSlot(
-        alphabet: PlateAlphabet.latinDigits,
-        box: PlateBox(438, 17, 46, 76),
+        count: 4,
+        left: 288,
+        top: 17,
+        width: 46,
+        height: 76,
+        pitch: 50,
       ),
     ],
-    decals: [
+    decals: const [
       // Stacked in the gap between the district code and the identifier: the
       // orange TÜV inspection sticker on top, the federal-state seal below.
       PlateDecal(
@@ -69,7 +68,7 @@ class GermanPlates {
         box: PlateBox(184, 54, 38, 38),
       ),
     ],
-    textGroups: [
+    textGroups: const [
       PlateTextGroup([0, 1], key: 'district'),
       PlateTextGroup([2], key: 'letters'),
       PlateTextGroup([3, 4, 5, 6], key: 'serial'),

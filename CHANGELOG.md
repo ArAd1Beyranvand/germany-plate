@@ -1,3 +1,18 @@
+## Unreleased
+
+- **The serial is a register, not four rectangles.** `GermanPlates.car`'s four
+  digits are built by `plateRegister` (core 0.6.0) — one call stating x 288,
+  pitch 50 — rather than four hand-written `PlateBox` literals. The geometry is
+  unchanged to the unit; nothing on a rendered plate moves.
+- The two district letters and the identifier letter stay literal. Two cells is
+  not a register worth naming, and the identifier letter sits on its own pitch.
+- `GermanPlates.car` is now `static final` rather than `static const`: a `const`
+  constructor cannot run a loop. `PlateSpec` equality is over `id` alone and a
+  `static final` is initialised lazily once per isolate, so this changes no
+  behaviour — but `const spec = GermanPlates.car;` must become `final spec = …`,
+  as the example now does.
+- Requires `core_plate: ^0.6.0` for `plateRegister`.
+
 ## 0.1.0
 
 First pub.dev release.
