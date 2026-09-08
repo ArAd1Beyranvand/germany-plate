@@ -48,12 +48,14 @@ const Set<String> _forbiddenNumbers = {'88', '18', '14'};
 /// per-keystroke `barredNext*` helpers and the `GermanPlateValidationResult`
 /// typedef this class used to expose are removed; a validator no longer bars
 /// keys (see docs/split/PLAN.md §1).
-class GermanPlateValidator extends PlateValidator {
+class GermanPlateValidator extends GatedPlateValidator {
   const GermanPlateValidator();
+
+  @override
+  String get gateGroup => 'letters';
 
   static final RegExp _districtPattern = RegExp(r'^[A-ZÄÖÜ]{1,3}$');
   static final RegExp _identifierLetterPattern = RegExp(r'^[A-Z]{1,2}$');
-  static final RegExp _identifierDigitPattern = RegExp(r'^[0-9]{1,4}$');
 
   /// Reads the district/letters/serial groups off [entry] by key and
   /// validates them. Returns [PlateValidation.valid] while the 'letters' group
@@ -62,16 +64,11 @@ class GermanPlateValidator extends PlateValidator {
   /// is the only feedback, and a plate that flashes red on its first character
   /// is worse than no validation.
   @override
-  PlateValidation validate(PlateEntry entry) {
-    final letters = entry.group('letters');
-    if (letters.isEmpty) return const PlateValidation.valid();
-
-    return validateFields(
-      district: entry.group('district'),
-      identifierLetters: letters,
-      identifierDigits: entry.group('serial'),
-    );
-  }
+  PlateValidation judge(PlateEntry entry) => validateFields(
+        district: entry.group('district'),
+        identifierLetters: entry.group('letters'),
+        identifierDigits: entry.group('serial'),
+      );
 
   /// The country rule without a spec: pass the plate's own slot values in.
   ///
@@ -101,7 +98,7 @@ class GermanPlateValidator extends PlateValidator {
       );
     }
 
-    if (digits.isNotEmpty && !_identifierDigitPattern.hasMatch(digits)) {
+    if (digits.isNotEmpty && !(isDigits(digits) && digits.length <= 4)) {
       return const PlateValidation.invalid(
         'Identifier digits must be 1-4 digits.',
       );
