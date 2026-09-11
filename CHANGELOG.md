@@ -1,4 +1,4 @@
-## Unreleased
+## 0.2.0
 
 - **The serial is a register, not four rectangles.** `GermanPlates.car`'s four
   digits are built by `plateRegister` (core 0.6.0) — one call stating x 288,

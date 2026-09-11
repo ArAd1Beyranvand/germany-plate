@@ -1,6 +1,6 @@
 name: germany_plate
 description: "Germany's licence plates for the core_plate library — the country panel, the car spec with its EU stickers, and the German plate validator."
-version: 0.1.0
+version: 0.2.0
 homepage: https://github.com/ArAd1Beyranvand/germany-plate
 
 environment:
@@ -12,11 +12,13 @@ resolution: workspace
 dependencies:
   flutter:
     sdk: flutter
-  # The country-neutral engine.
-  core_plate: ^0.5.0
+  # The country-neutral engine. 0.6.0 is required for plateRegister.
+  core_plate: ^0.9.0
 
 dev_dependencies:
   flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
 
 flutter:
   # This package OWNS the images it names. The `AssetImage(..., package:
