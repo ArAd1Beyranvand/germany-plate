@@ -23,17 +23,7 @@ import 'package:core_plate/core_plate.dart';
 /// widely-documented state-level additions and generically-offensive pairs.
 ///
 /// These consts are the single source of truth for this data.
-const Set<String> _forbiddenLetterPairs = {
-  'SS',
-  'SA',
-  'KZ',
-  'HJ',
-  'NS',
-  'AH',
-  'HH',
-  'SD',
-  'IS',
-};
+const Set<String> _forbiddenLetterPairs = {'SS', 'SA', 'KZ', 'HJ', 'NS', 'AH', 'HH', 'SD', 'IS'};
 
 /// Digit strings commonly barred nationwide/regionally for the same reason.
 /// Source of truth, as with [_forbiddenLetterPairs].
@@ -61,10 +51,10 @@ class GermanPlateValidator extends GatedPlateValidator {
   /// is worse than no validation.
   @override
   PlateValidation judge(PlateEntry entry) => validateFields(
-        district: entry.group('district'),
-        identifierLetters: entry.group('letters'),
-        identifierDigits: entry.group('serial'),
-      );
+    district: entry.group('district'),
+    identifierLetters: entry.group('letters'),
+    identifierDigits: entry.group('serial'),
+  );
 
   /// The country rule without a spec: pass the plate's own slot values in.
   ///
@@ -83,27 +73,19 @@ class GermanPlateValidator extends GatedPlateValidator {
     final digits = identifierDigits;
 
     if (!_districtPattern.hasMatch(d)) {
-      return const PlateValidation.invalid(
-        'District code must be 1-3 letters.',
-      );
+      return const PlateValidation.invalid('District code must be 1-3 letters.');
     }
 
     if (!_identifierLetterPattern.hasMatch(letters)) {
-      return const PlateValidation.invalid(
-        'Identifier letters must be 1-2 letters.',
-      );
+      return const PlateValidation.invalid('Identifier letters must be 1-2 letters.');
     }
 
     if (digits.isNotEmpty && !(isDigits(digits) && digits.length <= 4)) {
-      return const PlateValidation.invalid(
-        'Identifier digits must be 1-4 digits.',
-      );
+      return const PlateValidation.invalid('Identifier digits must be 1-4 digits.');
     }
 
     if (d.length + letters.length + digits.length > 8) {
-      return const PlateValidation.invalid(
-        'Plate exceeds the 8-character maximum.',
-      );
+      return const PlateValidation.invalid('Plate exceeds the 8-character maximum.');
     }
 
     if (_forbiddenLetterPairs.contains(letters)) {

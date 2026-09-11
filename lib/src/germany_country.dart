@@ -13,9 +13,6 @@ class GermanyCountry {
     panelColor: Color(0xFF003399),
     panelTextColor: Color(0xFFFFFFFF),
     flagAspectRatio: 5 / 3,
-    flag: SvgPlateAsset(
-      'assets/flags/Flag_of_Germany.svg',
-      package: 'germany_plate',
-    ),
+    flag: SvgPlateAsset('assets/flags/Flag_of_Germany.svg', package: 'germany_plate'),
   );
 }

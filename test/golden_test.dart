@@ -11,15 +11,7 @@ import 'package:germany_plate/germany_plate.dart';
 void main() {
   testWidgets('car, valid value (LTR, decals, EU panel)', (tester) async {
     final spec = GermanPlates.car;
-    final controller = PlateController.fromValues(spec, const [
-      'D',
-      'A',
-      'X',
-      '1',
-      '9',
-      '5',
-      '3',
-    ]);
+    final controller = PlateController.fromValues(spec, const ['D', 'A', 'X', '1', '9', '5', '3']);
 
     await tester.pumpWidget(
       MaterialApp(

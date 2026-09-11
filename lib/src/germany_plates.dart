@@ -28,21 +28,12 @@ class GermanPlates {
     textDirection: TextDirection.ltr,
     slots: [
       // District code, e.g. "DA". Two cells is not a register worth naming.
-      const PlateSlot(
-        alphabet: PlateAlphabet.latinUppercase,
-        box: PlateBox(64, 17, 52, 76),
-      ),
-      const PlateSlot(
-        alphabet: PlateAlphabet.latinUppercase,
-        box: PlateBox(122, 17, 52, 76),
-      ),
+      const PlateSlot(alphabet: PlateAlphabet.latinUppercase, box: PlateBox(64, 17, 52, 76)),
+      const PlateSlot(alphabet: PlateAlphabet.latinUppercase, box: PlateBox(122, 17, 52, 76)),
       // Identifier: one letter, then the serial digits, e.g. "X1953". The
       // letter is wider than a digit and sits on its own pitch, so it stays a
       // literal; the four digits are one register at pitch 50.
-      const PlateSlot(
-        alphabet: PlateAlphabet.latinUppercase,
-        box: PlateBox(230, 17, 52, 76),
-      ),
+      const PlateSlot(alphabet: PlateAlphabet.latinUppercase, box: PlateBox(230, 17, 52, 76)),
       ...plateRegister(
         alphabet: PlateAlphabet.latinDigits,
         count: 4,
@@ -57,10 +48,7 @@ class GermanPlates {
       // Stacked in the gap between the district code and the identifier: the
       // orange TÜV inspection sticker on top, the federal-state seal below.
       PlateDecal(
-        image: AssetImage(
-          'assets/de_inspection_sticker.png',
-          package: 'germany_plate',
-        ),
+        image: AssetImage('assets/de_inspection_sticker.png', package: 'germany_plate'),
         box: PlateBox(184, 14, 38, 38),
       ),
       PlateDecal(
