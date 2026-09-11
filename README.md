@@ -44,7 +44,8 @@ PlateCanvas(
 ```
 
 Type the forbidden `88` and the frame turns red - and then accepts the keystroke
-anyway. Validation is advice, not a bouncer.
+anyway. Validation is advice, not a bouncer. The repo's `plate_gallery/` app shows
+this plate alongside every one the other country packages draw.
 
 ## Contains
 
