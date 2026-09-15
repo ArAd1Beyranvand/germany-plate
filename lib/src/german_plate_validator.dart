@@ -19,6 +19,8 @@ library;
 
 import 'package:core_plate/core_plate.dart';
 
+import 'germany_identifier_group.dart';
+
 /// Nationwide-forbidden letter pairs (Nazi-organisation abbreviations) plus
 /// widely-documented state-level additions and generically-offensive pairs.
 ///
@@ -40,6 +42,15 @@ class GermanPlateValidator extends GatedPlateValidator {
   @override
   String get gateGroup => 'letters';
 
+  /// The area code may carry an umlaut; the identifier may not. An umlaut in
+  /// the identifier is the conventional marker of a deliberately fictitious
+  /// plate, so the asymmetry between these two patterns is the rule, not an
+  /// oversight.
+  ///
+  /// All 26 Latin letters are legal in the identifier. B, F and G were barred
+  /// until 1992 and I, O and Q until 2000 — to keep B/8, F/E, G/6, I/1 and
+  /// O/Q/0 apart — but that restriction is long gone, and a validator still
+  /// enforcing it would reject a quarter-century of real plates.
   static final RegExp _districtPattern = RegExp(r'^[A-ZÄÖÜ]{1,3}$');
   static final RegExp _identifierLetterPattern = RegExp(r'^[A-Z]{1,2}$');
 
@@ -84,12 +95,42 @@ class GermanPlateValidator extends GatedPlateValidator {
       return const PlateValidation.invalid('Identifier digits must be 1-4 digits.');
     }
 
+    // A serial is a number, and numbers are not written with leading zeros:
+    // "HH-JB 007" is not issuable, which is why the vanity-plate advice is to
+    // reach for "HH-J 8007" or "HH-OO 7" instead.
+    if (digits.startsWith('0')) {
+      return const PlateValidation.invalid('The serial cannot start with 0.');
+    }
+
     if (d.length + letters.length + digits.length > 8) {
       return const PlateValidation.invalid('Plate exceeds the 8-character maximum.');
     }
 
+    // The identifier's shape must be one of the five groups in FZV Appendix 1;
+    // "AB" with no digits, or "A" with no digits, is well-formed but not a
+    // shape anyone issues. Checked after the length cap so that an over-long
+    // plate reports the cap, which is the more useful complaint.
+    if (digits.isNotEmpty && GermanIdentifierGroup.of(letters: letters.length, digits: digits.length) == null) {
+      return PlateValidation.invalid(
+        '${letters.length} letter(s) and ${digits.length} digit(s) is not an issued identifier shape.',
+      );
+    }
+
     if (_forbiddenLetterPairs.contains(letters)) {
       return PlateValidation.invalid('"$letters" is a forbidden combination.');
+    }
+
+    // The same pairs are avoided where they straddle the gap: Hanover,
+    // Nuremberg, Cologne and Stuttgart issue no one-letter identifiers, because
+    // H-J, N-S, K-Z, S-A, S-D and S-S would read as the banned pair. Only
+    // reachable since the area code became variable-length — a two-letter code
+    // with a one-letter identifier spans three characters, not two.
+    //
+    // Note that this is *not* symmetric with the area code itself: HH
+    // (Hansestadt Hamburg) and AH (Ahaus) are legal codes and are not checked
+    // here, even though both appear in [_forbiddenLetterPairs].
+    if (d.length == 1 && letters.length == 1 && _forbiddenLetterPairs.contains('$d$letters')) {
+      return PlateValidation.invalid('"$d$letters" is a forbidden combination.');
     }
 
     if (digits.isNotEmpty && _forbiddenNumbers.contains(digits)) {
