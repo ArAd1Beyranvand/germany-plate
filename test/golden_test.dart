@@ -94,5 +94,17 @@ void main() {
         values: 'LEROO39',
       );
     });
+
+    testWidgets('seasonal — March to October, stacked over the rule', (tester) async {
+      await renderGolden(tester, spec: GermanPlates.seasonalFor(), values: 'HRK19530310');
+    });
+
+    testWidgets('06 — dealer, red, five digits and no identifier letters', (tester) async {
+      await renderGolden(tester, spec: GermanPlates.dealerFor(), values: 'WÜ06131');
+    });
+
+    testWidgets('07 — collector, red, the seal without an inspection sticker', (tester) async {
+      await renderGolden(tester, spec: GermanPlates.collectorFor(districtLetters: 3), values: 'SDL07001');
+    });
   });
 }

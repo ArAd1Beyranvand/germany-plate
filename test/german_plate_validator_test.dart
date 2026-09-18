@@ -1,3 +1,4 @@
+import 'package:core_plate/core_plate.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:germany_plate/germany_plate.dart';
 
@@ -97,6 +98,85 @@ void main() {
     test('allows what the authorities allow', () {
       expect(ok('AC', 'AB', '123'), isTrue);
       expect(ok('SE', 'XY', '123'), isTrue);
+    });
+  });
+
+  group('the season', () {
+    bool season(String start, String end) => GermanPlateValidator.validateSeason(start: start, end: end).isValid;
+
+    test('accepts a pair of real months', () {
+      expect(season('03', '10'), isTrue);
+      expect(season('01', '12'), isTrue);
+    });
+
+    test('accepts a season that wraps the year', () {
+      // A vehicle laid up for the summer. Requiring start < end would reject
+      // every winter plate in the country.
+      expect(season('11', '03'), isTrue);
+    });
+
+    test('rejects a month that is not a month', () {
+      expect(season('00', '10'), isFalse);
+      expect(season('03', '13'), isFalse);
+      expect(season('99', '99'), isFalse);
+    });
+
+    test('stays quiet while a month is still being typed', () {
+      expect(season('0', ''), isTrue);
+      expect(season('03', '1'), isTrue);
+    });
+
+    test('is read off a seasonal spec and ignored on every other', () {
+      final seasonal = GermanPlates.seasonalFor();
+      expect(GermanPlates.isSeasonal(seasonal), isTrue);
+      expect(GermanPlates.isSeasonal(GermanPlates.car), isFalse);
+
+      const validator = GermanPlateValidator();
+      // HR · K 1953, valid from month 03 to month 13.
+      final values = 'HRK19530313'.split('');
+      expect(validator.validate(PlateEntry(spec: seasonal, values: values)).isValid, isFalse);
+      values[10] = '0';
+      expect(validator.validate(PlateEntry(spec: seasonal, values: values)).isValid, isTrue);
+    });
+  });
+
+  group('the 06 and 07 numbers', () {
+    // Padded to the spec's slot count, so a half-typed number is the empty
+    // tail it would really be rather than a short list.
+    PlateValidation judge(PlateSpec spec, String typed) {
+      final values = List<String?>.filled(spec.slotCount, null);
+      for (var i = 0; i < typed.length; i++) {
+        values[i] = typed[i];
+      }
+      return GermanPlates.validatorFor(spec).validate(PlateEntry(spec: spec, values: values));
+    }
+
+    test('the right validator is chosen from the spec', () {
+      expect(GermanPlates.validatorFor(GermanPlates.dealerFor()), isA<GermanSerialPlateValidator>());
+      expect(GermanPlates.validatorFor(GermanPlates.collectorFor()), isA<GermanSerialPlateValidator>());
+      expect(GermanPlates.validatorFor(GermanPlates.car), isA<GermanPlateValidator>());
+      expect(GermanPlates.validatorFor(GermanPlates.seasonalFor()), isA<GermanPlateValidator>());
+    });
+
+    test('accepts the five digits the car validator would reject outright', () {
+      // Leading zero, five digits, no identifier letters: three rules of
+      // GermanPlateValidator's broken at once, and all three correct here.
+      expect(judge(GermanPlates.dealerFor(), 'WÜ06131').isValid, isTrue);
+      expect(judge(GermanPlates.collectorFor(districtLetters: 3), 'SDL07001').isValid, isTrue);
+    });
+
+    test('rejects the other format\'s prefix', () {
+      expect(judge(GermanPlates.dealerFor(), 'WÜ07131').isValid, isFalse);
+      expect(judge(GermanPlates.collectorFor(), 'SD06001').isValid, isFalse);
+    });
+
+    test('stays quiet while the number is still being typed', () {
+      final spec = GermanPlates.dealerFor();
+      expect(judge(spec, 'WÜ0').isValid, isTrue);
+      expect(judge(spec, 'WÜ06').isValid, isTrue);
+      expect(judge(spec, 'WÜ061').isValid, isTrue);
+      // ...but a first digit that cannot become 06 is wrong the moment it lands.
+      expect(judge(spec, 'WÜ1').isValid, isFalse);
     });
   });
 }

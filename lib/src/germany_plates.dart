@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:core_plate/core_plate.dart';
 
 import 'germany_alphabets.dart';
+import 'german_plate_validator.dart';
 import 'germany_country.dart';
 import 'germany_identifier_group.dart';
 
@@ -31,6 +32,14 @@ class GermanPlates {
   /// Blank plate to the right of the last digit.
   static const double _rightMargin = 36;
 
+  /// The season block: two stacked two-digit months, with a rule between them,
+  /// printed at the right end of a seasonal plate. Half-height, because it has
+  /// to fit two lines where the registration fits one.
+  static const double _seasonGap = 14;
+  static const double _seasonDigitWidth = 24, _seasonDigitPitch = 27, _seasonHeight = 40;
+  static const double _seasonTop = 10, _seasonLowerTop = 60;
+  static const double _seasonRuleTop = 53, _seasonRuleHeight = 4;
+
   /// The share of a slot's height the printed glyph actually occupies —
   /// `PlateTheme.glyphStyle`'s font size over the height it is handed.
   static const double _printedGlyphRatio = 0.72;
@@ -55,6 +64,7 @@ class GermanPlates {
   /// rim — which is what [PlateSpec.inkOverride] substitutes. Black is the
   /// theme's own and needs no constant.
   static const Color _greenInk = Color(0xFF1F6B2E);
+  static const Color _redInk = Color(0xFFD42B1E);
 
   /// A standard German car plate (e.g. "DA·X1953") in its most common shape:
   /// a two-letter area code and a group-d identifier (one letter, four digits).
@@ -122,7 +132,65 @@ class GermanPlates {
     int? digits,
   }) => _carLike(districtLetters: districtLetters, group: group, digits: digits, suffix: 'E', idKind: 'electric');
 
-  /// The one builder behind [carFor] and its variants.
+  /// A seasonal plate: the standard plate with its months of validity printed
+  /// at the right end, the first above a rule and the last below it.
+  ///
+  /// The vehicle may be used only within that window — a convertible registered
+  /// `03` over `10` is on the road from 1 March to 31 October and insured and
+  /// taxed only for those months. A season may wrap the year (`11` over `03`
+  /// for a winter vehicle), so the two months are in no particular order.
+  ///
+  /// The months are slots, not a label, because they are the one thing on a
+  /// seasonal plate that varies. [GermanPlateValidator] checks they are real
+  /// months; it deliberately does not require the first to precede the last.
+  static PlateSpec seasonalFor({
+    int districtLetters = 2,
+    GermanIdentifierGroup group = GermanIdentifierGroup.d,
+    int? digits,
+  }) => _carLike(districtLetters: districtLetters, group: group, digits: digits, season: true, idKind: 'seasonal');
+
+  /// A dealer's plate (`06`): red on white, an area code and five digits
+  /// beginning `06`, and no identifier letters.
+  ///
+  /// Held by a garage or dealership rather than issued against a vehicle, and
+  /// moved between vehicles for test drives and transfers. That is why it has
+  /// no identifier letters and why its number is six characters where a car's
+  /// is capped at eight — it is not a registration, and [GermanPlateValidator]
+  /// does not judge it.
+  static PlateSpec dealerFor({int districtLetters = 2}) =>
+      _serialPlate(kind: 'dealer', districtLetters: districtLetters);
+
+  /// A collector's plate (`07`): red on white, five digits beginning `07`.
+  ///
+  /// For a classic vehicle driven only to rallies, test drives and workshops,
+  /// and — unlike an `H` plate — usable across several vehicles in one
+  /// collection. It carries the registration seal and no inspection sticker:
+  /// the vehicles it covers are not in regular service, so there is no
+  /// *Hauptuntersuchung* to record.
+  static PlateSpec collectorFor({int districtLetters = 2}) =>
+      _serialPlate(kind: 'collector', districtLetters: districtLetters, inspectionSticker: false);
+
+  /// The `06` and `07` numbers: an area code, the seal, and five red digits.
+  ///
+  /// Their own specs rather than [carFor] with an argument, because they break
+  /// the two rules that define a car plate — a five-digit serial where the
+  /// register holds four, and six to eight characters with the leading zero
+  /// that a registration may never start with.
+  static PlateSpec _serialPlate({required String kind, required int districtLetters, bool inspectionSticker = true}) {
+    if (districtLetters < 1 || districtLetters > 3) {
+      throw ArgumentError.value(districtLetters, 'districtLetters', 'An area code carries one, two or three letters');
+    }
+    return _plate(
+      id: 'de.$kind${districtLetters == 2 ? '' : '.$districtLetters'}',
+      districtLetters: districtLetters,
+      identifierLetters: 0,
+      serialDigits: 5,
+      ink: _redInk,
+      inspectionSticker: inspectionSticker,
+    );
+  }
+
+  /// The shape checks [carFor] and its variants share, in front of [_plate].
   ///
   /// [ink] null is the theme's black. [suffix] is the single fixed character
   /// printed hard against the serial — `H` or `E` — and is a [PlateLabel], not
@@ -136,6 +204,7 @@ class GermanPlates {
     Color? ink,
     String? suffix,
     String? idKind,
+    bool season = false,
   }) {
     final serialDigits = digits ?? group.maxDigits;
 
@@ -150,7 +219,10 @@ class GermanPlates {
       );
     }
     // The suffix counts against the cap: an H or an E is part of the
-    // Kennzeichen, not an ornament hung off the end of it.
+    // Kennzeichen, not an ornament hung off the end of it. The season months
+    // do not — they are a validity period printed on the plate, not part of
+    // the registration, which is why a seasonal plate can carry eight
+    // characters and four more digits besides.
     final total = districtLetters + group.letters + serialDigits + (suffix == null ? 0 : 1);
     if (total > 8) {
       throw ArgumentError(
@@ -160,6 +232,37 @@ class GermanPlates {
       );
     }
 
+    return _plate(
+      id: _idFor(districtLetters, group, serialDigits, idKind),
+      districtLetters: districtLetters,
+      identifierLetters: group.letters,
+      serialDigits: serialDigits,
+      ink: ink,
+      suffix: suffix,
+      season: season,
+    );
+  }
+
+  /// The one geometry every German plate in this package is laid out by: an
+  /// area code, the round stickers, an identifier of letters and digits, and
+  /// optionally a printed suffix or a stacked season block at the right end.
+  ///
+  /// Takes raw counts rather than a [GermanIdentifierGroup] because the formats
+  /// that are *not* car plates — the 06 dealer and 07 collector numbers — carry
+  /// no identifier letters and five digits, a shape no group describes. They
+  /// are still the same plate with the same pitches, so they share this rather
+  /// than forking it; what they do not share is [_carLike]'s rules, which is
+  /// why the checks sit in front of this and not inside it.
+  static PlateSpec _plate({
+    required String id,
+    required int districtLetters,
+    required int identifierLetters,
+    required int serialDigits,
+    Color? ink,
+    String? suffix,
+    bool inspectionSticker = true,
+    bool season = false,
+  }) {
     // Each run starts where the previous one ended, plus its gap. The stickers
     // are not a fixed-position pair in a fixed gap: on a real plate they sit
     // immediately after the *last* area-code letter, whichever letter that is,
@@ -167,19 +270,31 @@ class GermanPlates {
     final districtRight = _districtLeft + (districtLetters - 1) * _letterPitch + _letterWidth;
     final decalLeft = districtRight + _decalGapBefore;
     final identifierLeft = decalLeft + _decalSize + _decalGapAfter;
-    final identifierRight = identifierLeft + (group.letters - 1) * _letterPitch + _letterWidth;
+    // A format with no identifier letters — the 06 and 07 numbers — has its
+    // serial start where those letters would have: the max keeps the one-run
+    // arithmetic from stepping backwards on a count of zero.
+    final identifierRight = identifierLetters == 0
+        ? identifierLeft - _serialGap
+        : identifierLeft + (identifierLetters - 1) * _letterPitch + _letterWidth;
     final serialLeft = identifierRight + _serialGap;
     final serialRight = serialLeft + (serialDigits - 1) * _digitPitch + _digitWidth;
     // Flush against the last digit, with none of the inter-digit gap: on
     // "HL TL 15H" and "LER OO 39E" the suffix touches the serial.
-    final contentRight = suffix == null ? serialRight : serialRight + _letterWidth;
+    final charactersRight = suffix == null ? serialRight : serialRight + _letterWidth;
+    // The season block is half-height and stacked, so it is short and wide
+    // where the characters are tall and narrow — two digits' worth of width
+    // buys four digits and a rule.
+    final seasonLeft = charactersRight + _seasonGap;
+    final seasonRight = seasonLeft + _seasonDigitPitch + _seasonDigitWidth;
+    final contentRight = season ? seasonRight : charactersRight;
 
     final firstIdentifier = districtLetters;
-    final firstSerial = firstIdentifier + group.letters;
+    final firstSerial = firstIdentifier + identifierLetters;
+    final firstSeason = firstSerial + serialDigits;
 
     return PlateSpec(
       // Ids are this library's equality and persistence key — see [_idFor].
-      id: _idFor(districtLetters, group, serialDigits, idKind),
+      id: id,
       country: GermanyCountry.germany,
       inkOverride: ink,
       canvasWidth: contentRight + _rightMargin,
@@ -204,7 +319,7 @@ class GermanPlates {
         // Identifier letters, e.g. "X" or "DP". Latin only.
         ...plateRegister(
           alphabet: PlateAlphabet.latinUppercase,
-          count: group.letters,
+          count: identifierLetters,
           left: identifierLeft,
           top: _top,
           width: _letterWidth,
@@ -221,17 +336,49 @@ class GermanPlates {
           height: _height,
           pitch: _digitPitch,
         ),
+        // The season: the first month of validity above, the last below. Two
+        // registers rather than one four-digit one, because the rule between
+        // them is what makes "03 over 10" read as March-to-October rather than
+        // as the number 0310.
+        if (season) ...[
+          ...plateRegister(
+            alphabet: PlateAlphabet.latinDigits,
+            count: 2,
+            left: seasonLeft,
+            top: _seasonTop,
+            width: _seasonDigitWidth,
+            height: _seasonHeight,
+            pitch: _seasonDigitPitch,
+          ),
+          ...plateRegister(
+            alphabet: PlateAlphabet.latinDigits,
+            count: 2,
+            left: seasonLeft,
+            top: _seasonLowerTop,
+            width: _seasonDigitWidth,
+            height: _seasonHeight,
+            pitch: _seasonDigitPitch,
+          ),
+        ],
+      ],
+      rules: [
+        if (season) PlateRule(box: PlateBox(seasonLeft, _seasonRuleTop, seasonRight - seasonLeft, _seasonRuleHeight)),
       ],
       decals: [
         // Stacked in the gap after the area code: the vehicle-inspection
-        // sticker on top, the federal-state registration seal below.
-        PlateDecal(
-          image: const AssetImage('assets/de_inspection_sticker.png', package: 'germany_plate'),
-          box: PlateBox(decalLeft, 14, _decalSize, _decalSize),
-        ),
+        // sticker on top, the federal-state registration seal below. A plate
+        // for a vehicle that is not registered to be driven — a collector's 07
+        // number — carries the seal alone: there is no inspection to record.
+        if (inspectionSticker)
+          PlateDecal(
+            image: const AssetImage('assets/de_inspection_sticker.png', package: 'germany_plate'),
+            box: PlateBox(decalLeft, 14, _decalSize, _decalSize),
+          ),
         PlateDecal(
           image: const AssetImage('assets/de_state_seal.png', package: 'germany_plate'),
-          box: PlateBox(decalLeft, 54, _decalSize, _decalSize),
+          // Centred on the character line when it is the only sticker, rather
+          // than sitting low with a gap above it where the other one was.
+          box: PlateBox(decalLeft, inspectionSticker ? 54 : 36, _decalSize, _decalSize),
         ),
       ],
       labels: [
@@ -239,13 +386,17 @@ class GermanPlates {
       ],
       textGroups: [
         PlateTextGroup([for (var i = 0; i < districtLetters; i++) i], key: 'district'),
-        PlateTextGroup([for (var i = 0; i < group.letters; i++) firstIdentifier + i], key: 'letters'),
+        PlateTextGroup([for (var i = 0; i < identifierLetters; i++) firstIdentifier + i], key: 'letters'),
         // The suffix rides on the serial group's rendering rather than getting
         // a group of its own: a [PlateTextGroup] indexes slots, and the suffix
         // is a label. [PlateTextGroup.prefix] is the only literal a group can
         // carry and it goes on the wrong end, so a caller reading the plate as
         // text appends the suffix itself — see [suffixOf].
         PlateTextGroup([for (var i = 0; i < serialDigits; i++) firstSerial + i], key: 'serial'),
+        if (season) ...[
+          PlateTextGroup([firstSeason, firstSeason + 1], key: 'seasonStart'),
+          PlateTextGroup([firstSeason + 2, firstSeason + 3], key: 'seasonEnd'),
+        ],
       ],
     );
   }
@@ -266,6 +417,13 @@ class GermanPlates {
 
   static const Map<String, String> _suffixKinds = {'historic': 'H', 'electric': 'E'};
 
+  /// Whether [spec] carries the stacked season block.
+  ///
+  /// Asked of the spec's own groups rather than its id, because the groups are
+  /// what a validator and a host actually read: a spec with a `seasonStart`
+  /// group has months to judge and to display, whatever it is called.
+  static bool isSeasonal(PlateSpec spec) => spec.textGroups.any((group) => group.key == 'seasonStart');
+
   /// Every shape the law issues, in a stable order — each area-code length
   /// against each group and serial length that fits in eight characters.
   ///
@@ -285,6 +443,7 @@ class GermanPlates {
   static final List<PlateSpec> allCarVariants = List<PlateSpec>.unmodifiable(<PlateSpec>[
     for (final (districtLetters, group, digits) in _shapes) ...[
       greenFor(districtLetters: districtLetters, group: group, digits: digits),
+      seasonalFor(districtLetters: districtLetters, group: group, digits: digits),
       if (districtLetters + group.letters + digits < 8) ...[
         historicFor(districtLetters: districtLetters, group: group, digits: digits),
         electricFor(districtLetters: districtLetters, group: group, digits: digits),
@@ -292,9 +451,45 @@ class GermanPlates {
     ],
   ]);
 
+  /// The formats that are not car plates: the `06` dealer and `07` collector
+  /// numbers, in each area-code length.
+  ///
+  /// A sibling list of its own because [GermanPlateValidator] does not apply to
+  /// these — see [validatorFor]. Grouping them with the car plates would invite
+  /// a caller to hand the whole list one validator.
+  static final List<PlateSpec> allSerialPlates = List<PlateSpec>.unmodifiable(<PlateSpec>[
+    for (var districtLetters = 1; districtLetters <= 3; districtLetters++) ...[
+      dealerFor(districtLetters: districtLetters),
+      collectorFor(districtLetters: districtLetters),
+    ],
+  ]);
+
+  /// The validator that judges [spec].
+  ///
+  /// Not every German plate is a registration, and [GermanPlateValidator]'s
+  /// rules describe only the ones that are: a serial of at most four digits
+  /// that never starts with a zero, an identifier of one or two letters, eight
+  /// characters in all. The `06` and `07` numbers break every one of those, and
+  /// handing them that validator would paint a perfectly correct dealer plate
+  /// red. So the choice of validator is made here, from the spec, rather than
+  /// left to a caller who has no way of knowing which rules apply.
+  ///
+  /// The car variants — green, `H`, `E`, seasonal — are registrations and keep
+  /// [GermanPlateValidator]; it reads the season block off the same spec when
+  /// there is one.
+  static PlateValidator validatorFor(PlateSpec spec) => switch (spec.id) {
+    final id when id.startsWith('de.dealer') => const GermanSerialPlateValidator.dealer(),
+    final id when id.startsWith('de.collector') => const GermanSerialPlateValidator.collector(),
+    _ => const GermanPlateValidator(),
+  };
+
   /// Every spec this package declares, which is what the spec test sweeps
   /// through `debugValidateSpec`. Adding a list above adds it here too.
-  static final List<PlateSpec> allSpecs = List<PlateSpec>.unmodifiable(<PlateSpec>[...allCars, ...allCarVariants]);
+  static final List<PlateSpec> allSpecs = List<PlateSpec>.unmodifiable(<PlateSpec>[
+    ...allCars,
+    ...allCarVariants,
+    ...allSerialPlates,
+  ]);
 
   /// Each (area-code length, group, serial length) the law issues, in a stable
   /// order. Shared by [allCars] and [allCarVariants] so the two cannot drift.

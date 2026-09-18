@@ -33,6 +33,10 @@ export 'src/germany_identifier_group.dart';
 /// The car plate specs, including the inspection sticker and state seal decals.
 export 'src/germany_plates.dart';
 
-/// The advisory validator: format plus the forbidden letter/number
-/// combinations. Demo-scoped — see the class doc for what it does not check.
+/// The advisory validators: [GermanPlateValidator] for registrations — format,
+/// the season block, and the forbidden letter/number combinations — and
+/// [GermanSerialPlateValidator] for the `06` and `07` numbers, which are not
+/// registrations and follow none of those rules. [GermanPlates.validatorFor]
+/// picks between them. Demo-scoped; see the class docs for what they do not
+/// check.
 export 'src/german_plate_validator.dart';

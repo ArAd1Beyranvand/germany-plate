@@ -23,11 +23,24 @@ void main() {
     expect(GermanPlates.car.id, 'de.car');
   });
 
-  test('no car spec exceeds the eight-character maximum', () {
-    for (final spec in GermanPlates.allSpecs) {
-      // A suffix counts against the cap, and it is a label rather than a slot.
-      final suffix = GermanPlates.suffixOf(spec).length;
-      expect(spec.slotCount + suffix, lessThanOrEqualTo(8), reason: spec.id);
+  test('no registration exceeds the eight-character maximum', () {
+    for (final spec in [...GermanPlates.allCars, ...GermanPlates.allCarVariants]) {
+      // The cap is on the registration. A suffix counts against it and is a
+      // label rather than a slot; the season months do not count at all —
+      // they are a validity period printed on the plate, not part of the
+      // number — so they are subtracted back out here.
+      final registration =
+          spec.slotCount + GermanPlates.suffixOf(spec).length - (GermanPlates.isSeasonal(spec) ? 4 : 0);
+      expect(registration, lessThanOrEqualTo(8), reason: spec.id);
+    }
+  });
+
+  test('the 06 and 07 numbers are deliberately outside those rules', () {
+    for (final spec in GermanPlates.allSerialPlates) {
+      // Five digits and no identifier letters — the shape that made these
+      // their own specs rather than carFor with an argument.
+      expect(spec.valueOfGroup('letters', List.filled(spec.slotCount, 'X')), isEmpty, reason: spec.id);
+      expect(spec.valueOfGroup('serial', List.filled(spec.slotCount, '0')), hasLength(5), reason: spec.id);
     }
   });
 
