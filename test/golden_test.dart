@@ -106,5 +106,17 @@ void main() {
     testWidgets('07 — collector, red, the seal without an inspection sticker', (tester) async {
       await renderGolden(tester, spec: GermanPlates.collectorFor(districtLetters: 3), values: 'SDL07001');
     });
+
+    testWidgets('04 — short-term, no euroband, the date stacked on the yellow band', (tester) async {
+      await renderGolden(tester, spec: GermanPlates.shortTermFor(), values: 'KA04401090304');
+    });
+
+    testWidgets('export — the same plate with a red band', (tester) async {
+      await renderGolden(tester, spec: GermanPlates.exportFor(districtLetters: 3), values: 'MKK04581090905');
+    });
+
+    testWidgets('Bundeswehr — the flag block, the printed hyphen, six digits', (tester) async {
+      await renderGolden(tester, spec: GermanPlates.bundeswehrFor(), values: 'Y751957');
+    });
   });
 }

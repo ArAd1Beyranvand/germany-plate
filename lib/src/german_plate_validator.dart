@@ -229,3 +229,130 @@ class GermanSerialPlateValidator extends GatedPlateValidator {
     return const PlateValidation.valid();
   }
 }
+
+/// Validates a number that expires: the `04` short-term plate and the export
+/// plate (`Ausfuhrkennzeichen`), each an area code, a five-digit number, and a
+/// date stacked DD over MM over YY on the coloured band at the right.
+///
+/// Sibling to [GermanPlateValidator] and [GermanSerialPlateValidator] rather
+/// than a mode of either. These plates carry six digits of date that no
+/// registration has, their number has no identifier letters to gate on, and a
+/// leading zero is not merely legal but the format's own name: `04401` is what
+/// a short-term number looks like.
+///
+/// One class for both, because — exactly as with the `06` and `07` numbers —
+/// they differ in one datum. See `core_plate/CLAUDE.md`: variation is data.
+class GermanDatedPlateValidator extends GatedPlateValidator {
+  /// The `04` number, valid for at most four weeks. Its serial opens `04`.
+  const GermanDatedPlateValidator.shortTerm() : prefix = '04';
+
+  /// The export number, valid for at most a year. Its serial is not reserved
+  /// to an opening pair, so there is nothing to check it against.
+  const GermanDatedPlateValidator.export() : prefix = null;
+
+  /// The two digits the number opens with, or null when the format reserves
+  /// none.
+  final String? prefix;
+
+  /// The date, not the number: the band is the last thing on these plates to
+  /// be filled in, so by the time it has a character there is a whole plate to
+  /// judge.
+  @override
+  String get gateGroup => 'expiryDay';
+
+  @override
+  PlateValidation judge(PlateEntry entry) {
+    final district = entry.group('district').toUpperCase();
+    final serial = entry.group('serial');
+
+    if (!_districtPattern.hasMatch(district)) {
+      return const PlateValidation.invalid('District code must be 1-3 letters.');
+    }
+    if (!isDigits(serial)) {
+      return const PlateValidation.invalid('The number must be digits.');
+    }
+    final prefix = this.prefix;
+    if (prefix != null && !prefix.startsWith(serial.substring(0, serial.length.clamp(0, 2)))) {
+      return PlateValidation.invalid('This number begins "$prefix".');
+    }
+    if (serial.length > 5) {
+      return const PlateValidation.invalid('The number is five digits.');
+    }
+    return validateExpiry(
+      day: entry.group('expiryDay'),
+      month: entry.group('expiryMonth'),
+      year: entry.group('expiryYear'),
+    );
+  }
+
+  /// The date on the band: a day, a month and a two-digit year, each printed
+  /// on its own row.
+  ///
+  /// Quiet about a field that is not yet two digits — half of `03` is `0`,
+  /// which is not a month — and about the year entirely: every two-digit year
+  /// is a year, and the plate carries no century to check it against.
+  ///
+  /// Checks the day against the month's own length, so `31/04` is rejected and
+  /// `29/02` is not: a two-digit year cannot say which century it is in, so
+  /// there is no way to know whether that February had a 29th.
+  static PlateValidation validateExpiry({required String day, required String month, required String year}) {
+    for (final (name, value) in [('day', day), ('month', month), ('year', year)]) {
+      if (value.isEmpty || value.length < 2) continue;
+      if (!isDigitsOfLength(value, 2)) {
+        return PlateValidation.invalid('The expiry $name is two digits.');
+      }
+    }
+    if (month.length == 2 && isDigits(month)) {
+      final m = int.parse(month);
+      if (m < 1 || m > 12) return PlateValidation.invalid('"$month" is not a month.');
+      if (day.length == 2 && isDigits(day)) {
+        final d = int.parse(day);
+        if (d < 1 || d > _daysInMonth[m - 1]) {
+          return PlateValidation.invalid('"$day" is not a day of month $month.');
+        }
+      }
+    } else if (day.length == 2 && isDigits(day)) {
+      final d = int.parse(day);
+      if (d < 1 || d > 31) return PlateValidation.invalid('"$day" is not a day.');
+    }
+    return const PlateValidation.valid();
+  }
+
+  /// February's 29 is the leap year's, not a mistake: a two-digit year names
+  /// no century, so there is nothing here to work a leap rule out from.
+  static const List<int> _daysInMonth = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+}
+
+/// Validates a Bundeswehr `Y` plate: the fixed `Y` in the area code's
+/// position, then six digits printed as two triples.
+///
+/// The `Y` has been the German armed forces' mark since 1956 — it stands for
+/// nothing, which was the point: it was picked because no *Unterscheidungs-
+/// zeichen* used it. This validator is what says the area code must read `Y`;
+/// the character is a slot rather than a printed label because on every German
+/// format in this package the area code is a register, and one format printing
+/// its own would be the odd one out.
+class GermanBundeswehrValidator extends GatedPlateValidator {
+  const GermanBundeswehrValidator();
+
+  /// The second triple: it fills last, so by the time it has a character the
+  /// whole number is there to judge.
+  @override
+  String get gateGroup => 'serialTail';
+
+  @override
+  PlateValidation judge(PlateEntry entry) {
+    final district = entry.group('district').toUpperCase();
+    if (district != 'Y') {
+      return const PlateValidation.invalid('A Bundeswehr plate begins "Y".');
+    }
+    final serial = entry.group('serial') + entry.group('serialTail');
+    if (!isDigits(serial)) {
+      return const PlateValidation.invalid('The number must be digits.');
+    }
+    if (serial.length > 6) {
+      return const PlateValidation.invalid('The number is six digits.');
+    }
+    return const PlateValidation.valid();
+  }
+}

@@ -57,6 +57,27 @@ class GermanPlates {
     return PlateBox(left, _top + (_height - height) / 2, width, height);
   }
 
+  /// Where the area code starts on a plate with no euroband — the `04`,
+  /// export and Bundeswehr formats. Clear of the rim, and nothing more.
+  static const double _bareLeft = 20;
+
+  /// The coloured band at the right-hand end of an `04` or export plate, and
+  /// the six date digits stacked inside it.
+  ///
+  /// The band runs the full height of the face, corner to corner, and the date
+  /// is three rows of two digits centred in it. Half-height rows, as with the
+  /// season block: three lines have to fit where the registration fits one.
+  static const double _bandGap = 12, _bandWidth = 62;
+  static const double _bandDigitWidth = 22, _bandDigitPitch = 25;
+  static const double _bandRowHeight = 28, _bandRowPitch = 31, _bandFirstRowTop = 10;
+
+  /// The Bundeswehr plate: the flag block, the printed hyphen after the `Y`,
+  /// and the gap that splits the six digits into two triples.
+  static const double _flagPanelWidth = 46;
+  static const double _flagGapAfter = 10;
+  static const double _hyphenWidth = 30, _hyphenGapAfter = 10;
+  static const double _tripleGap = 10;
+
   /// The inks a German plate is printed in, sampled from the reference photos
   /// in `claude/research/germany_plates/`.
   ///
@@ -66,10 +87,11 @@ class GermanPlates {
   static const Color _greenInk = Color(0xFF1F6B2E);
   static const Color _redInk = Color(0xFFD42B1E);
 
-  /// Tier 3: temporary and export formats.
-  /// Yellow band on short-term (04) plates; red on export.
-  static const Color _shortTermYellow = Color(0xFFFFD800);
-  static const Color _exportRed = Color(0xFFDC143C);
+  /// The two band fills, sampled from the same photos. These are not inks — a
+  /// dated plate is printed black on white like an ordinary one, and the band
+  /// is the coloured field the date sits on. See [PlateBand].
+  static const Color _shortTermBand = Color(0xFFF0A800);
+  static const Color _exportBand = Color(0xFFE62A22);
 
   /// A standard German car plate (e.g. "DA·X1953") in its most common shape:
   /// a two-letter area code and a group-d identifier (one letter, four digits).
@@ -469,6 +491,18 @@ class GermanPlates {
     ],
   ]);
 
+  /// The formats that carry an expiry date on a coloured band: the `04`
+  /// short-term number and the export number, in each area-code length.
+  ///
+  /// Their own list for the reason [allSerialPlates] is: neither is a
+  /// registration, and neither is judged by [GermanPlateValidator].
+  static final List<PlateSpec> allDatedPlates = List<PlateSpec>.unmodifiable(<PlateSpec>[
+    for (var districtLetters = 1; districtLetters <= 3; districtLetters++) ...[
+      shortTermFor(districtLetters: districtLetters),
+      exportFor(districtLetters: districtLetters),
+    ],
+  ]);
+
   /// The validator that judges [spec].
   ///
   /// Not every German plate is a registration, and [GermanPlateValidator]'s
@@ -485,6 +519,9 @@ class GermanPlates {
   static PlateValidator validatorFor(PlateSpec spec) => switch (spec.id) {
     final id when id.startsWith('de.dealer') => const GermanSerialPlateValidator.dealer(),
     final id when id.startsWith('de.collector') => const GermanSerialPlateValidator.collector(),
+    final id when id.startsWith('de.shortterm') => const GermanDatedPlateValidator.shortTerm(),
+    final id when id.startsWith('de.export') => const GermanDatedPlateValidator.export(),
+    final id when id.startsWith('de.bundeswehr') => const GermanBundeswehrValidator(),
     _ => const GermanPlateValidator(),
   };
 
@@ -495,10 +532,8 @@ class GermanPlates {
   /// Valid for a maximum of four weeks and used for vehicle transfers, test
   /// drives, and temporary registration. The expiry date is editable — every
   /// deployment is different.
-  ///
-  /// **TIER 3 — NOT YET IMPLEMENTED.** Requires a coloured right-side band
-  /// (PlateRule-based geometry) and no euroband (PlatePanel). See the task.
-  static PlateSpec shortTermFor({int districtLetters = 2}) => throw UnimplementedError('Tier 3');
+  static PlateSpec shortTermFor({int districtLetters = 2}) =>
+      _rightBandPlate(kind: 'shortterm', districtLetters: districtLetters, band: _shortTermBand);
 
   /// An export plate (`Ausfuhrkennzeichen`): black on white, structured like a
   /// short-term but with a red band and carrying a different expiry date.
@@ -506,8 +541,195 @@ class GermanPlates {
   /// For vehicles being exported or in transit to be exported. Issued for up to
   /// one year.
   ///
-  /// **TIER 3 — NOT YET IMPLEMENTED.** See [shortTermFor].
-  static PlateSpec exportFor({int districtLetters = 2}) => throw UnimplementedError('Tier 3');
+  /// The same plate as [shortTermFor] in every dimension; the band's fill is
+  /// the whole difference, which is why both call [_rightBandPlate] with a
+  /// colour rather than each describing a geometry of its own.
+  static PlateSpec exportFor({int districtLetters = 2}) =>
+      _rightBandPlate(kind: 'export', districtLetters: districtLetters, band: _exportBand);
+
+  /// The `04` and export numbers: no euroband, an area code, the seal, five
+  /// digits, and a full-height coloured band carrying the expiry date stacked
+  /// DD over MM over YY.
+  ///
+  /// The date is slots rather than a label, for the same reason the season
+  /// months are: it is the one thing on these plates that varies, and a plate
+  /// whose whole point is that it expires has no business printing a fixed day.
+  ///
+  /// No inspection sticker. A vehicle on an `04` or an export number has no
+  /// current *Hauptuntersuchung* to record — the band is the validity period,
+  /// and it is the only one these plates carry.
+  static PlateSpec _rightBandPlate({required String kind, required int districtLetters, required Color band}) {
+    if (districtLetters < 1 || districtLetters > 3) {
+      throw ArgumentError.value(districtLetters, 'districtLetters', 'An area code carries one, two or three letters');
+    }
+
+    const serialDigits = 5;
+    final districtRight = _bareLeft + (districtLetters - 1) * _letterPitch + _letterWidth;
+    final decalLeft = districtRight + _decalGapBefore;
+    final serialLeft = decalLeft + _decalSize + _decalGapAfter;
+    final serialRight = serialLeft + (serialDigits - 1) * _digitPitch + _digitWidth;
+    // The band runs to the right-hand edge: there is no right margin on these
+    // plates, because the band *is* the end of the plate.
+    final bandLeft = serialRight + _bandGap;
+    final canvasWidth = bandLeft + _bandWidth;
+    // The date register, centred in the band: two cells at a pitch, so the run
+    // is one pitch plus one cell wide.
+    final dateLeft = bandLeft + (_bandWidth - (_bandDigitPitch + _bandDigitWidth)) / 2;
+
+    final firstDate = districtLetters + serialDigits;
+
+    return PlateSpec(
+      id: 'de.$kind${districtLetters == 2 ? '' : '.$districtLetters'}',
+      country: GermanyCountry.germany,
+      canvasWidth: canvasWidth,
+      canvasHeight: 110,
+      // No euroband. The panel still declares a (zero-width) geometry because
+      // every spec has one; [PlateSpec.noPanel] is what stops it being painted.
+      noPanel: true,
+      panel: const PlatePanel(box: PlateBox(0, 0, 0, 110)),
+      rightBand: PlateBand(box: PlateBox(bandLeft, 0, _bandWidth, 110), color: band),
+      textDirection: TextDirection.ltr,
+      slots: [
+        ...plateRegister(
+          alphabet: GermanAlphabets.districtLetters,
+          count: districtLetters,
+          left: _bareLeft,
+          top: _top,
+          width: _letterWidth,
+          height: _height,
+          pitch: _letterPitch,
+        ),
+        ...plateRegister(
+          alphabet: PlateAlphabet.latinDigits,
+          count: serialDigits,
+          left: serialLeft,
+          top: _top,
+          width: _digitWidth,
+          height: _height,
+          pitch: _digitPitch,
+        ),
+        // The expiry date: day, month and year, one two-digit register per row
+        // of the band. Three registers rather than one six-digit one, because
+        // the rows are what make "09 03 04" read as a date.
+        for (var row = 0; row < 3; row++)
+          ...plateRegister(
+            alphabet: PlateAlphabet.latinDigits,
+            count: 2,
+            left: dateLeft,
+            top: _bandFirstRowTop + row * _bandRowPitch,
+            width: _bandDigitWidth,
+            height: _bandRowHeight,
+            pitch: _bandDigitPitch,
+          ),
+      ],
+      decals: [
+        // The seal alone, centred on the character line — as on the 07
+        // collector number, and for the same reason.
+        PlateDecal(
+          image: const AssetImage('assets/de_state_seal.png', package: 'germany_plate'),
+          box: PlateBox(decalLeft, 36, _decalSize, _decalSize),
+        ),
+      ],
+      textGroups: [
+        PlateTextGroup([for (var i = 0; i < districtLetters; i++) i], key: 'district'),
+        PlateTextGroup([for (var i = 0; i < serialDigits; i++) districtLetters + i], key: 'serial'),
+        PlateTextGroup([firstDate, firstDate + 1], key: 'expiryDay'),
+        PlateTextGroup([firstDate + 2, firstDate + 3], key: 'expiryMonth'),
+        PlateTextGroup([firstDate + 4, firstDate + 5], key: 'expiryYear'),
+      ],
+    );
+  }
+
+  /// A Bundeswehr plate: the German flag printed where the euroband would be,
+  /// a `Y`, a printed hyphen, and six digits in two triples.
+  ///
+  /// The armed forces register their own vehicles, so the plate carries the
+  /// Bundeswehr's registration seal and no inspection sticker — the
+  /// *Hauptuntersuchung* a civilian plate records is not what a military
+  /// vehicle is inspected under.
+  ///
+  /// The hyphen is a [PlateLabel], not a slot, for the reason the `H` and `E`
+  /// suffixes are: it never varies. The `Y` *is* a slot — it is the area code's
+  /// position, and the area code is a register on every German format in this
+  /// package — and [GermanBundeswehrValidator] is what says it must read `Y`.
+  static PlateSpec bundeswehrFor({int districtLetters = 1}) {
+    if (districtLetters < 1 || districtLetters > 3) {
+      throw ArgumentError.value(districtLetters, 'districtLetters', 'An area code carries one, two or three letters');
+    }
+
+    final districtLeft = _flagPanelWidth + _flagGapAfter;
+    final districtRight = districtLeft + (districtLetters - 1) * _letterPitch + _letterWidth;
+    final hyphenRight = districtRight + _hyphenWidth;
+    final serialLeft = hyphenRight + _hyphenGapAfter;
+    // Six digits in two triples. One evenly-pitched run of six would be a
+    // different plate: "Y-751957" is printed as "751" and "957".
+    final firstTripleRight = serialLeft + 2 * _digitPitch + _digitWidth;
+    final secondTripleLeft = firstTripleRight + _tripleGap;
+    final secondTripleRight = secondTripleLeft + 2 * _digitPitch + _digitWidth;
+
+    final firstSerial = districtLetters;
+
+    return PlateSpec(
+      id: 'de.bundeswehr${districtLetters == 1 ? '' : '.$districtLetters'}',
+      // The flag block, not the blue EU panel — see [GermanyCountry.bundeswehr].
+      country: GermanyCountry.bundeswehr,
+      canvasWidth: secondTripleRight + _rightMargin,
+      canvasHeight: 110,
+      panel: const PlatePanel(
+        box: PlateBox(0, 0, _flagPanelWidth, 110),
+        // Sized so the flag exactly fills the padding box: the block carries no
+        // caption, so the default 10% inset would leave it small and top-left.
+        padding: EdgeInsets.symmetric(horizontal: 3.5, vertical: 21),
+      ),
+      textDirection: TextDirection.ltr,
+      slots: [
+        ...plateRegister(
+          alphabet: GermanAlphabets.districtLetters,
+          count: districtLetters,
+          left: districtLeft,
+          top: _top,
+          width: _letterWidth,
+          height: _height,
+          pitch: _letterPitch,
+        ),
+        ...plateRegister(
+          alphabet: PlateAlphabet.latinDigits,
+          count: 3,
+          left: serialLeft,
+          top: _top,
+          width: _digitWidth,
+          height: _height,
+          pitch: _digitPitch,
+        ),
+        ...plateRegister(
+          alphabet: PlateAlphabet.latinDigits,
+          count: 3,
+          left: secondTripleLeft,
+          top: _top,
+          width: _digitWidth,
+          height: _height,
+          pitch: _digitPitch,
+        ),
+      ],
+      decals: [
+        // The registration seal, tucked under the hyphen, where the Bundeswehr
+        // prints its own Zulassungssiegel.
+        PlateDecal(
+          image: const AssetImage('assets/de_state_seal.png', package: 'germany_plate'),
+          box: PlateBox(districtRight, 60, _decalSize, _decalSize),
+        ),
+      ],
+      labels: [PlateLabel(text: '-', box: _printedBox(districtRight, _hyphenWidth), glyphHeight: _height)],
+      textGroups: [
+        PlateTextGroup([for (var i = 0; i < districtLetters; i++) i], key: 'district'),
+        // Two keyed triples rather than one six-digit register: they sit either
+        // side of a gap, so one group would be an unevenly-pitched register and
+        // `debugValidateSpec` says so. [GermanBundeswehrValidator] reads both.
+        PlateTextGroup([firstSerial, firstSerial + 1, firstSerial + 2], key: 'serial'),
+        PlateTextGroup([firstSerial + 3, firstSerial + 4, firstSerial + 5], key: 'serialTail'),
+      ],
+    );
+  }
 
   /// Every spec this package declares, which is what the spec test sweeps
   /// through `debugValidateSpec`. Adding a list above adds it here too.
@@ -515,6 +737,8 @@ class GermanPlates {
     ...allCars,
     ...allCarVariants,
     ...allSerialPlates,
+    ...allDatedPlates,
+    bundeswehrFor(),
   ]);
 
   /// Each (area-code length, group, serial length) the law issues, in a stable

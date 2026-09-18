@@ -44,6 +44,47 @@ void main() {
     }
   });
 
+  test('the 04 and export numbers are one geometry in two colours', () {
+    final shortTerm = GermanPlates.shortTermFor();
+    final export = GermanPlates.exportFor();
+
+    expect(shortTerm.canvasWidth, export.canvasWidth);
+    expect(shortTerm.rightBand!.box.rect, export.rightBand!.box.rect);
+    expect(shortTerm.rightBand!.color, isNot(export.rightBand!.color));
+    // Black on white, both of them: the band is a field, not an ink.
+    expect(shortTerm.inkOverride, isNull);
+    expect(export.inkOverride, isNull);
+  });
+
+  test('the dated plates carry no euroband and one seal', () {
+    for (final spec in GermanPlates.allDatedPlates) {
+      expect(spec.noPanel, isTrue, reason: spec.id);
+      expect(spec.decals, hasLength(1), reason: spec.id);
+      // Five digits of number, and six of date in three rows of two.
+      expect(spec.valueOfGroup('serial', List.filled(spec.slotCount, '0')), hasLength(5), reason: spec.id);
+      for (final key in ['expiryDay', 'expiryMonth', 'expiryYear']) {
+        expect(spec.valueOfGroup(key, List.filled(spec.slotCount, '0')), hasLength(2), reason: '${spec.id} $key');
+      }
+      // The band runs to the plate's right-hand edge.
+      expect(spec.rightBand!.box.right, spec.canvasWidth, reason: spec.id);
+      expect(spec.rightBand!.box.height, spec.canvasHeight, reason: spec.id);
+    }
+  });
+
+  test('the Bundeswehr number is the flag block, a printed hyphen and two triples', () {
+    final spec = GermanPlates.bundeswehrFor();
+
+    expect(spec.noPanel, isFalse);
+    expect(spec.country, GermanyCountry.bundeswehr);
+    expect(spec.panel.box.width, lessThan(GermanPlates.car.panel.box.width));
+    expect(spec.labels.map((l) => l.text), ['-']);
+    // The seal alone: a military vehicle records no Hauptuntersuchung.
+    expect(spec.decals, hasLength(1));
+    expect(spec.slotCount, 7);
+    final filled = List.filled(spec.slotCount, '0');
+    expect(spec.valueOfGroup('serial', filled) + spec.valueOfGroup('serialTail', filled), hasLength(6));
+  });
+
   test('a shorter plate has a shorter canvas', () {
     final short = GermanPlates.carFor(districtLetters: 1, group: GermanIdentifierGroup.a, digits: 1);
     final long = GermanPlates.carFor(districtLetters: 3, group: GermanIdentifierGroup.c);

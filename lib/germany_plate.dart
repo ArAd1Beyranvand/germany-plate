@@ -34,9 +34,11 @@ export 'src/germany_identifier_group.dart';
 export 'src/germany_plates.dart';
 
 /// The advisory validators: [GermanPlateValidator] for registrations — format,
-/// the season block, and the forbidden letter/number combinations — and
-/// [GermanSerialPlateValidator] for the `06` and `07` numbers, which are not
-/// registrations and follow none of those rules. [GermanPlates.validatorFor]
-/// picks between them. Demo-scoped; see the class docs for what they do not
-/// check.
+/// the season block, and the forbidden letter/number combinations —
+/// [GermanSerialPlateValidator] for the `06` and `07` numbers,
+/// [GermanDatedPlateValidator] for the `04` short-term and export numbers with
+/// their expiry date, and [GermanBundeswehrValidator] for the military `Y`
+/// number. Only the first judges a registration; the rest follow none of its
+/// rules. [GermanPlates.validatorFor] picks between them. Demo-scoped; see the
+/// class docs for what they do not check.
 export 'src/german_plate_validator.dart';

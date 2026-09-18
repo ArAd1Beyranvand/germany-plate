@@ -179,4 +179,97 @@ void main() {
       expect(judge(spec, 'WÜ1').isValid, isFalse);
     });
   });
+
+  group('the 04 and export numbers', () {
+    PlateValidation judge(PlateSpec spec, String typed) {
+      final values = List<String?>.filled(spec.slotCount, null);
+      for (var i = 0; i < typed.length; i++) {
+        values[i] = typed[i];
+      }
+      return GermanPlates.validatorFor(spec).validate(PlateEntry(spec: spec, values: values));
+    }
+
+    test('the right validator is chosen from the spec', () {
+      expect(GermanPlates.validatorFor(GermanPlates.shortTermFor()), isA<GermanDatedPlateValidator>());
+      expect(GermanPlates.validatorFor(GermanPlates.exportFor()), isA<GermanDatedPlateValidator>());
+    });
+
+    test('a leading zero is the format, not a fault', () {
+      // KA · 04401, expiring 09/03/04 — the photographed plate.
+      expect(judge(GermanPlates.shortTermFor(), 'KA04401090304').isValid, isTrue);
+    });
+
+    test('04 is reserved to the short-term number and free on the export one', () {
+      expect(judge(GermanPlates.shortTermFor(), 'KA05401090304').isValid, isFalse);
+      // The export number reserves no opening pair, so the same serial passes.
+      expect(judge(GermanPlates.exportFor(), 'KA05401090304').isValid, isTrue);
+    });
+
+    test('stays quiet until the date has been reached', () {
+      // Wrong on every count — five letters would fit, and the number does not
+      // open 04 — but the band is still blank, so there is nothing to judge.
+      expect(judge(GermanPlates.shortTermFor(), 'KA99999').isValid, isTrue);
+    });
+
+    group('the expiry date', () {
+      bool date(String day, String month, String year) =>
+          GermanDatedPlateValidator.validateExpiry(day: day, month: month, year: year).isValid;
+
+      test('accepts a real date', () {
+        expect(date('09', '03', '04'), isTrue);
+        expect(date('31', '12', '99'), isTrue);
+      });
+
+      test('rejects a month that is not one', () {
+        expect(date('09', '13', '04'), isFalse);
+        expect(date('09', '00', '04'), isFalse);
+      });
+
+      test('rejects a day the month does not have', () {
+        expect(date('31', '04', '04'), isFalse);
+        expect(date('30', '02', '04'), isFalse);
+        expect(date('00', '03', '04'), isFalse);
+      });
+
+      test('lets February keep its 29th — a two-digit year names no century', () {
+        expect(date('29', '02', '04'), isTrue);
+      });
+
+      test('takes any two-digit year, and stays quiet mid-keystroke', () {
+        expect(date('09', '03', '00'), isTrue);
+        expect(date('3', '', ''), isTrue);
+        expect(date('31', '0', ''), isTrue);
+      });
+    });
+  });
+
+  group('the Bundeswehr number', () {
+    PlateValidation judge(String typed) {
+      final spec = GermanPlates.bundeswehrFor();
+      final values = List<String?>.filled(spec.slotCount, null);
+      for (var i = 0; i < typed.length; i++) {
+        values[i] = typed[i];
+      }
+      return GermanPlates.validatorFor(spec).validate(PlateEntry(spec: spec, values: values));
+    }
+
+    test('the right validator is chosen from the spec', () {
+      expect(GermanPlates.validatorFor(GermanPlates.bundeswehrFor()), isA<GermanBundeswehrValidator>());
+    });
+
+    test('accepts Y and six digits', () {
+      expect(judge('Y751957').isValid, isTrue);
+      // A leading zero is fine: this is a number the forces issue, not a
+      // registration.
+      expect(judge('Y012345').isValid, isTrue);
+    });
+
+    test('rejects an area code that is not Y', () {
+      expect(judge('X751957').isValid, isFalse);
+    });
+
+    test('stays quiet until the second triple is reached', () {
+      expect(judge('X751').isValid, isTrue);
+    });
+  });
 }
