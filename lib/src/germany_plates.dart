@@ -66,6 +66,11 @@ class GermanPlates {
   static const Color _greenInk = Color(0xFF1F6B2E);
   static const Color _redInk = Color(0xFFD42B1E);
 
+  /// Tier 3: temporary and export formats.
+  /// Yellow band on short-term (04) plates; red on export.
+  static const Color _shortTermYellow = Color(0xFFFFD800);
+  static const Color _exportRed = Color(0xFFDC143C);
+
   /// A standard German car plate (e.g. "DA·X1953") in its most common shape:
   /// a two-letter area code and a group-d identifier (one letter, four digits).
   ///
@@ -482,6 +487,27 @@ class GermanPlates {
     final id when id.startsWith('de.collector') => const GermanSerialPlateValidator.collector(),
     _ => const GermanPlateValidator(),
   };
+
+  /// A short-term plate (`04`): black on white, an area code, one seal, five
+  /// digits beginning `04`, and a yellow band on the right carrying the expiry
+  /// date stacked DD/MM/YY.
+  ///
+  /// Valid for a maximum of four weeks and used for vehicle transfers, test
+  /// drives, and temporary registration. The expiry date is editable — every
+  /// deployment is different.
+  ///
+  /// **TIER 3 — NOT YET IMPLEMENTED.** Requires a coloured right-side band
+  /// (PlateRule-based geometry) and no euroband (PlatePanel). See the task.
+  static PlateSpec shortTermFor({int districtLetters = 2}) => throw UnimplementedError('Tier 3');
+
+  /// An export plate (`Ausfuhrkennzeichen`): black on white, structured like a
+  /// short-term but with a red band and carrying a different expiry date.
+  ///
+  /// For vehicles being exported or in transit to be exported. Issued for up to
+  /// one year.
+  ///
+  /// **TIER 3 — NOT YET IMPLEMENTED.** See [shortTermFor].
+  static PlateSpec exportFor({int districtLetters = 2}) => throw UnimplementedError('Tier 3');
 
   /// Every spec this package declares, which is what the spec test sweeps
   /// through `debugValidateSpec`. Adding a list above adds it here too.
