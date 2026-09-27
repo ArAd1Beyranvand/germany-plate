@@ -3,21 +3,6 @@
 /// A [PlateCountry], the EU car [PlateSpec]s with their two round stickers,
 /// and the advisory [GermanPlateValidator]. Nothing here knows about any other
 /// country package.
-///
-/// ```dart
-/// PlateCanvas(spec: GermanPlates.car, validator: const GermanPlateValidator())
-/// ```
-///
-/// [GermanPlates.car] is the common shape — a two-letter area code and a
-/// one-letter, four-digit identifier. A plate is not one fixed shape, though:
-/// the area code runs to three letters and the identifier to two, so
-/// [GermanPlates.carFor] builds any of the shapes the law issues, and the
-/// canvas gets shorter as the plate does.
-///
-/// ```dart
-/// // CUX DP 150 — a three-letter area code, group c: the eight-character max.
-/// GermanPlates.carFor(districtLetters: 3, group: GermanIdentifierGroup.c)
-/// ```
 library;
 
 /// The country panel — caption, colours, and the flag SVG this package ships.
