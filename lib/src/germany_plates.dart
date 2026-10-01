@@ -232,6 +232,10 @@ class GermanPlates {
       canvasWidth: contentRight + _rightMargin,
       canvasHeight: 110,
       panel: const PlatePanel(box: PlateBox(0, 0, 56.4, 110)),
+      background: const PlateSection.columns([
+        PlatePart(PlateSection.fill(PlateFill.panel), end: 56.4),
+        PlatePart(PlateSection.plain),
+      ]),
       textDirection: TextDirection.ltr,
       slots: [
         ...plateRegister(
@@ -398,7 +402,11 @@ class GermanPlates {
       canvasHeight: 110,
       noPanel: true,
       panel: const PlatePanel(box: PlateBox(0, 0, 0, 110)),
-      rightBand: PlateBand(box: PlateBox(bandLeft, 0, _bandWidth, 110), color: band),
+      // The band is the plate's last column, run out under the frame.
+      background: PlateSection.columns([
+        PlatePart(PlateSection.plain, end: bandLeft),
+        PlatePart(PlateSection.fill(PlateFill.color(band))),
+      ]),
       textDirection: TextDirection.ltr,
       slots: [
         ...plateRegister(
@@ -473,6 +481,10 @@ class GermanPlates {
         box: PlateBox(0, 0, _flagPanelWidth, 110),
         padding: EdgeInsets.symmetric(horizontal: 3.5, vertical: 21),
       ),
+      background: const PlateSection.columns([
+        PlatePart(PlateSection.fill(PlateFill.panel), end: _flagPanelWidth),
+        PlatePart(PlateSection.plain),
+      ]),
       textDirection: TextDirection.ltr,
       slots: [
         ...plateRegister(

@@ -1,4 +1,5 @@
 import 'package:core_plate/core_plate.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:germany_plate/germany_plate.dart';
 
@@ -49,8 +50,11 @@ void main() {
     final export = GermanPlates.exportFor();
 
     expect(shortTerm.canvasWidth, export.canvasWidth);
-    expect(shortTerm.rightBand!.box.rect, export.rightBand!.box.rect);
-    expect(shortTerm.rightBand!.color, isNot(export.rightBand!.color));
+    expect(shortTerm.background.parts.first.end, export.background.parts.first.end);
+    expect(
+      shortTerm.background.parts.last.section.fill!.color,
+      isNot(export.background.parts.last.section.fill!.color),
+    );
     // Black on white, both of them: the band is a field, not an ink.
     expect(shortTerm.inkOverride, isNull);
     expect(export.inkOverride, isNull);
@@ -65,9 +69,11 @@ void main() {
       for (final key in ['expiryDay', 'expiryMonth', 'expiryYear']) {
         expect(spec.valueOfGroup(key, List.filled(spec.slotCount, '0')), hasLength(2), reason: '${spec.id} $key');
       }
-      // The band runs to the plate's right-hand edge.
-      expect(spec.rightBand!.box.right, spec.canvasWidth, reason: spec.id);
-      expect(spec.rightBand!.box.height, spec.canvasHeight, reason: spec.id);
+      // The band is the last column: it runs to the plate's right-hand edge
+      // and the full height.
+      expect(spec.background.axis, Axis.horizontal, reason: spec.id);
+      expect(spec.background.parts.last.end, isNull, reason: spec.id);
+      expect(spec.background.parts.last.section.fill!.color, isNotNull, reason: spec.id);
     }
   });
 
