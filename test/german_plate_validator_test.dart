@@ -9,11 +9,12 @@ import 'package:germany_plate/germany_plate.dart';
 /// — so these pin what it *does* decide and nothing about districts it declines
 /// to know about.
 void main() {
-  bool ok(String district, String letters, String digits) => GermanPlateValidator.validateFields(
-    district: district,
-    identifierLetters: letters,
-    identifierDigits: digits,
-  ).isValid;
+  bool ok(String district, String letters, String digits) =>
+      GermanPlateValidator.validateFields(
+        district: district,
+        identifierLetters: letters,
+        identifierDigits: digits,
+      ).isValid;
 
   group('shape', () {
     test('accepts one, two and three letter area codes', () {
@@ -28,7 +29,10 @@ void main() {
 
     test('accepts an umlaut in the area code but not the identifier', () {
       expect(ok('GÖ', 'X', '2495'), isTrue);
-      expect(ok('WÜ', 'NK', '88'), isFalse); // 88 is barred, but for its own reason
+      expect(
+        ok('WÜ', 'NK', '88'),
+        isFalse,
+      ); // 88 is barred, but for its own reason
       expect(ok('WÜ', 'NK', '89'), isTrue);
       expect(ok('M', 'Ü', '1234'), isFalse);
     });
@@ -102,7 +106,8 @@ void main() {
   });
 
   group('the season', () {
-    bool season(String start, String end) => GermanPlateValidator.validateSeason(start: start, end: end).isValid;
+    bool season(String start, String end) =>
+        GermanPlateValidator.validateSeason(start: start, end: end).isValid;
 
     test('accepts a pair of real months', () {
       expect(season('03', '10'), isTrue);
@@ -134,9 +139,15 @@ void main() {
       const validator = GermanPlateValidator();
       // HR · K 1953, valid from month 03 to month 13.
       final values = 'HRK19530313'.split('');
-      expect(validator.validate(PlateEntry(spec: seasonal, values: values)).isValid, isFalse);
+      expect(
+        validator.validate(PlateEntry(spec: seasonal, values: values)).isValid,
+        isFalse,
+      );
       values[10] = '0';
-      expect(validator.validate(PlateEntry(spec: seasonal, values: values)).isValid, isTrue);
+      expect(
+        validator.validate(PlateEntry(spec: seasonal, values: values)).isValid,
+        isTrue,
+      );
     });
   });
 
@@ -148,21 +159,41 @@ void main() {
       for (var i = 0; i < typed.length; i++) {
         values[i] = typed[i];
       }
-      return GermanPlates.validatorFor(spec).validate(PlateEntry(spec: spec, values: values));
+      return GermanPlates.validatorFor(
+        spec,
+      ).validate(PlateEntry(spec: spec, values: values));
     }
 
     test('the right validator is chosen from the spec', () {
-      expect(GermanPlates.validatorFor(GermanPlates.dealerFor()), isA<GermanSerialPlateValidator>());
-      expect(GermanPlates.validatorFor(GermanPlates.collectorFor()), isA<GermanSerialPlateValidator>());
-      expect(GermanPlates.validatorFor(GermanPlates.car), isA<GermanPlateValidator>());
-      expect(GermanPlates.validatorFor(GermanPlates.seasonalFor()), isA<GermanPlateValidator>());
+      expect(
+        GermanPlates.validatorFor(GermanPlates.dealerFor()),
+        isA<GermanSerialPlateValidator>(),
+      );
+      expect(
+        GermanPlates.validatorFor(GermanPlates.collectorFor()),
+        isA<GermanSerialPlateValidator>(),
+      );
+      expect(
+        GermanPlates.validatorFor(GermanPlates.car),
+        isA<GermanPlateValidator>(),
+      );
+      expect(
+        GermanPlates.validatorFor(GermanPlates.seasonalFor()),
+        isA<GermanPlateValidator>(),
+      );
     });
 
     test('accepts the five digits the car validator would reject outright', () {
       // Leading zero, five digits, no identifier letters: three rules of
       // GermanPlateValidator's broken at once, and all three correct here.
       expect(judge(GermanPlates.dealerFor(), 'WÜ06131').isValid, isTrue);
-      expect(judge(GermanPlates.collectorFor(districtLetters: 3), 'SDL07001').isValid, isTrue);
+      expect(
+        judge(
+          GermanPlates.collectorFor(districtLetters: 3),
+          'SDL07001',
+        ).isValid,
+        isTrue,
+      );
     });
 
     test('rejects the other format\'s prefix', () {
@@ -186,24 +217,44 @@ void main() {
       for (var i = 0; i < typed.length; i++) {
         values[i] = typed[i];
       }
-      return GermanPlates.validatorFor(spec).validate(PlateEntry(spec: spec, values: values));
+      return GermanPlates.validatorFor(
+        spec,
+      ).validate(PlateEntry(spec: spec, values: values));
     }
 
     test('the right validator is chosen from the spec', () {
-      expect(GermanPlates.validatorFor(GermanPlates.shortTermFor()), isA<GermanDatedPlateValidator>());
-      expect(GermanPlates.validatorFor(GermanPlates.exportFor()), isA<GermanDatedPlateValidator>());
+      expect(
+        GermanPlates.validatorFor(GermanPlates.shortTermFor()),
+        isA<GermanDatedPlateValidator>(),
+      );
+      expect(
+        GermanPlates.validatorFor(GermanPlates.exportFor()),
+        isA<GermanDatedPlateValidator>(),
+      );
     });
 
     test('a leading zero is the format, not a fault', () {
       // KA · 04401, expiring 09/03/04 — the photographed plate.
-      expect(judge(GermanPlates.shortTermFor(), 'KA04401090304').isValid, isTrue);
+      expect(
+        judge(GermanPlates.shortTermFor(), 'KA04401090304').isValid,
+        isTrue,
+      );
     });
 
-    test('04 is reserved to the short-term number and free on the export one', () {
-      expect(judge(GermanPlates.shortTermFor(), 'KA05401090304').isValid, isFalse);
-      // The export number reserves no opening pair, so the same serial passes.
-      expect(judge(GermanPlates.exportFor(), 'KA05401090304').isValid, isTrue);
-    });
+    test(
+      '04 is reserved to the short-term number and free on the export one',
+      () {
+        expect(
+          judge(GermanPlates.shortTermFor(), 'KA05401090304').isValid,
+          isFalse,
+        );
+        // The export number reserves no opening pair, so the same serial passes.
+        expect(
+          judge(GermanPlates.exportFor(), 'KA05401090304').isValid,
+          isTrue,
+        );
+      },
+    );
 
     test('stays quiet until the date has been reached', () {
       // Wrong on every count — five letters would fit, and the number does not
@@ -213,7 +264,11 @@ void main() {
 
     group('the expiry date', () {
       bool date(String day, String month, String year) =>
-          GermanDatedPlateValidator.validateExpiry(day: day, month: month, year: year).isValid;
+          GermanDatedPlateValidator.validateExpiry(
+            day: day,
+            month: month,
+            year: year,
+          ).isValid;
 
       test('accepts a real date', () {
         expect(date('09', '03', '04'), isTrue);
@@ -231,9 +286,12 @@ void main() {
         expect(date('00', '03', '04'), isFalse);
       });
 
-      test('lets February keep its 29th — a two-digit year names no century', () {
-        expect(date('29', '02', '04'), isTrue);
-      });
+      test(
+        'lets February keep its 29th — a two-digit year names no century',
+        () {
+          expect(date('29', '02', '04'), isTrue);
+        },
+      );
 
       test('takes any two-digit year, and stays quiet mid-keystroke', () {
         expect(date('09', '03', '00'), isTrue);
@@ -250,11 +308,16 @@ void main() {
       for (var i = 0; i < typed.length; i++) {
         values[i] = typed[i];
       }
-      return GermanPlates.validatorFor(spec).validate(PlateEntry(spec: spec, values: values));
+      return GermanPlates.validatorFor(
+        spec,
+      ).validate(PlateEntry(spec: spec, values: values));
     }
 
     test('the right validator is chosen from the spec', () {
-      expect(GermanPlates.validatorFor(GermanPlates.bundeswehrFor()), isA<GermanBundeswehrValidator>());
+      expect(
+        GermanPlates.validatorFor(GermanPlates.bundeswehrFor()),
+        isA<GermanBundeswehrValidator>(),
+      );
     });
 
     test('accepts Y and six digits', () {

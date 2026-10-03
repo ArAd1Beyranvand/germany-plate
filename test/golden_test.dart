@@ -17,7 +17,11 @@ import 'package:germany_plate/germany_plate.dart';
 /// instead, so every image renders as an error placeholder. Regenerate with
 /// `flutter test --update-goldens` after a deliberate change.
 void main() {
-  Future<void> renderGolden(WidgetTester tester, {required PlateSpec spec, required String values}) async {
+  Future<void> renderGolden(
+    WidgetTester tester, {
+    required PlateSpec spec,
+    required String values,
+  }) async {
     final controller = PlateController.fromValues(spec, values.split(''));
 
     await tester.pumpWidget(
@@ -40,10 +44,15 @@ void main() {
     // event loop, which fake time does not advance — so pumpAndSettle alone can
     // capture the frame while the stickers are still blank. runAsync gives the
     // decode a real slice of time before the golden is taken.
-    await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 50)));
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 50)),
+    );
     await tester.pumpAndSettle();
 
-    await expectLater(find.byType(PlateView), matchesGoldenFile('goldens/${spec.id.replaceAll('.', '_')}.png'));
+    await expectLater(
+      find.byType(PlateView),
+      matchesGoldenFile('goldens/${spec.id.replaceAll('.', '_')}.png'),
+    );
 
     // Unmount the tree before disposing: _PlateCanvasState.dispose() calls
     // controller.detach(), which notifies listeners, so the controller must
@@ -53,36 +62,59 @@ void main() {
   }
 
   group('shape', () {
-    testWidgets('the common one — two area letters, one identifier letter, four digits', (tester) async {
-      await renderGolden(tester, spec: GermanPlates.car, values: 'DAX1953');
-    });
+    testWidgets(
+      'the common one — two area letters, one identifier letter, four digits',
+      (tester) async {
+        await renderGolden(tester, spec: GermanPlates.car, values: 'DAX1953');
+      },
+    );
 
     testWidgets('the shortest — one of each', (tester) async {
       await renderGolden(
         tester,
-        spec: GermanPlates.carFor(districtLetters: 1, group: GermanIdentifierGroup.a, digits: 1),
+        spec: GermanPlates.carFor(
+          districtLetters: 1,
+          group: GermanIdentifierGroup.a,
+          digits: 1,
+        ),
         values: 'NM4',
       );
     });
 
-    testWidgets('the longest — three area letters and a group-c identifier', (tester) async {
+    testWidgets('the longest — three area letters and a group-c identifier', (
+      tester,
+    ) async {
       await renderGolden(
         tester,
-        spec: GermanPlates.carFor(districtLetters: 3, group: GermanIdentifierGroup.c),
+        spec: GermanPlates.carFor(
+          districtLetters: 3,
+          group: GermanIdentifierGroup.c,
+        ),
         values: 'CUXDP150',
       );
     });
   });
 
   group('variant', () {
-    testWidgets('green — tax-exempt, and the rim goes green with the glyphs', (tester) async {
-      await renderGolden(tester, spec: GermanPlates.greenFor(), values: 'DAX1953');
-    });
-
-    testWidgets('H — historic, the suffix hard against the serial', (tester) async {
+    testWidgets('green — tax-exempt, and the rim goes green with the glyphs', (
+      tester,
+    ) async {
       await renderGolden(
         tester,
-        spec: GermanPlates.historicFor(group: GermanIdentifierGroup.b, digits: 2),
+        spec: GermanPlates.greenFor(),
+        values: 'DAX1953',
+      );
+    });
+
+    testWidgets('H — historic, the suffix hard against the serial', (
+      tester,
+    ) async {
+      await renderGolden(
+        tester,
+        spec: GermanPlates.historicFor(
+          group: GermanIdentifierGroup.b,
+          digits: 2,
+        ),
         values: 'HLTL15',
       );
     });
@@ -90,33 +122,72 @@ void main() {
     testWidgets('E — electric, at the eight-character maximum', (tester) async {
       await renderGolden(
         tester,
-        spec: GermanPlates.electricFor(districtLetters: 3, group: GermanIdentifierGroup.b, digits: 2),
+        spec: GermanPlates.electricFor(
+          districtLetters: 3,
+          group: GermanIdentifierGroup.b,
+          digits: 2,
+        ),
         values: 'LEROO39',
       );
     });
 
-    testWidgets('seasonal — March to October, stacked over the rule', (tester) async {
-      await renderGolden(tester, spec: GermanPlates.seasonalFor(), values: 'HRK19530310');
+    testWidgets('seasonal — March to October, stacked over the rule', (
+      tester,
+    ) async {
+      await renderGolden(
+        tester,
+        spec: GermanPlates.seasonalFor(),
+        values: 'HRK19530310',
+      );
     });
 
-    testWidgets('06 — dealer, red, five digits and no identifier letters', (tester) async {
-      await renderGolden(tester, spec: GermanPlates.dealerFor(), values: 'WÜ06131');
+    testWidgets('06 — dealer, red, five digits and no identifier letters', (
+      tester,
+    ) async {
+      await renderGolden(
+        tester,
+        spec: GermanPlates.dealerFor(),
+        values: 'WÜ06131',
+      );
     });
 
-    testWidgets('07 — collector, red, the seal without an inspection sticker', (tester) async {
-      await renderGolden(tester, spec: GermanPlates.collectorFor(districtLetters: 3), values: 'SDL07001');
+    testWidgets('07 — collector, red, the seal without an inspection sticker', (
+      tester,
+    ) async {
+      await renderGolden(
+        tester,
+        spec: GermanPlates.collectorFor(districtLetters: 3),
+        values: 'SDL07001',
+      );
     });
 
-    testWidgets('04 — short-term, no euroband, the date stacked on the yellow band', (tester) async {
-      await renderGolden(tester, spec: GermanPlates.shortTermFor(), values: 'KA04401090304');
-    });
+    testWidgets(
+      '04 — short-term, no euroband, the date stacked on the yellow band',
+      (tester) async {
+        await renderGolden(
+          tester,
+          spec: GermanPlates.shortTermFor(),
+          values: 'KA04401090304',
+        );
+      },
+    );
 
     testWidgets('export — the same plate with a red band', (tester) async {
-      await renderGolden(tester, spec: GermanPlates.exportFor(districtLetters: 3), values: 'MKK04581090905');
+      await renderGolden(
+        tester,
+        spec: GermanPlates.exportFor(districtLetters: 3),
+        values: 'MKK04581090905',
+      );
     });
 
-    testWidgets('Bundeswehr — the flag block, the printed hyphen, six digits', (tester) async {
-      await renderGolden(tester, spec: GermanPlates.bundeswehrFor(), values: 'Y751957');
+    testWidgets('Bundeswehr — the flag block, the printed hyphen, six digits', (
+      tester,
+    ) async {
+      await renderGolden(
+        tester,
+        spec: GermanPlates.bundeswehrFor(),
+        values: 'Y751957',
+      );
     });
   });
 }

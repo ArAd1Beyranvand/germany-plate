@@ -17,21 +17,29 @@ void main() {
     }
   });
 
-  test('every spec is uniquely identified, and the common one keeps the bare id', () {
-    final ids = GermanPlates.allSpecs.map((s) => s.id).toList();
-    expect(ids.toSet(), hasLength(ids.length));
-    expect(ids, contains('de.car'));
-    expect(GermanPlates.car.id, 'de.car');
-  });
+  test(
+    'every spec is uniquely identified, and the common one keeps the bare id',
+    () {
+      final ids = GermanPlates.allSpecs.map((s) => s.id).toList();
+      expect(ids.toSet(), hasLength(ids.length));
+      expect(ids, contains('de.car'));
+      expect(GermanPlates.car.id, 'de.car');
+    },
+  );
 
   test('no registration exceeds the eight-character maximum', () {
-    for (final spec in [...GermanPlates.allCars, ...GermanPlates.allCarVariants]) {
+    for (final spec in [
+      ...GermanPlates.allCars,
+      ...GermanPlates.allCarVariants,
+    ]) {
       // The cap is on the registration. A suffix counts against it and is a
       // label rather than a slot; the season months do not count at all —
       // they are a validity period printed on the plate, not part of the
       // number — so they are subtracted back out here.
       final registration =
-          spec.slotCount + GermanPlates.suffixOf(spec).length - (GermanPlates.isSeasonal(spec) ? 4 : 0);
+          spec.slotCount +
+          GermanPlates.suffixOf(spec).length -
+          (GermanPlates.isSeasonal(spec) ? 4 : 0);
       expect(registration, lessThanOrEqualTo(8), reason: spec.id);
     }
   });
@@ -40,8 +48,16 @@ void main() {
     for (final spec in GermanPlates.allSerialPlates) {
       // Five digits and no identifier letters — the shape that made these
       // their own specs rather than carFor with an argument.
-      expect(spec.valueOfGroup('letters', List.filled(spec.slotCount, 'X')), isEmpty, reason: spec.id);
-      expect(spec.valueOfGroup('serial', List.filled(spec.slotCount, '0')), hasLength(5), reason: spec.id);
+      expect(
+        spec.valueOfGroup('letters', List.filled(spec.slotCount, 'X')),
+        isEmpty,
+        reason: spec.id,
+      );
+      expect(
+        spec.valueOfGroup('serial', List.filled(spec.slotCount, '0')),
+        hasLength(5),
+        reason: spec.id,
+      );
     }
   });
 
@@ -50,7 +66,10 @@ void main() {
     final export = GermanPlates.exportFor();
 
     expect(shortTerm.canvasWidth, export.canvasWidth);
-    expect(shortTerm.background.parts.first.end, export.background.parts.first.end);
+    expect(
+      shortTerm.background.parts.first.end,
+      export.background.parts.first.end,
+    );
     expect(
       shortTerm.background.parts.last.section.fill!.color,
       isNot(export.background.parts.last.section.fill!.color),
@@ -65,35 +84,61 @@ void main() {
       expect(spec.noPanel, isTrue, reason: spec.id);
       expect(spec.decals, hasLength(1), reason: spec.id);
       // Five digits of number, and six of date in three rows of two.
-      expect(spec.valueOfGroup('serial', List.filled(spec.slotCount, '0')), hasLength(5), reason: spec.id);
+      expect(
+        spec.valueOfGroup('serial', List.filled(spec.slotCount, '0')),
+        hasLength(5),
+        reason: spec.id,
+      );
       for (final key in ['expiryDay', 'expiryMonth', 'expiryYear']) {
-        expect(spec.valueOfGroup(key, List.filled(spec.slotCount, '0')), hasLength(2), reason: '${spec.id} $key');
+        expect(
+          spec.valueOfGroup(key, List.filled(spec.slotCount, '0')),
+          hasLength(2),
+          reason: '${spec.id} $key',
+        );
       }
       // The band is the last column: it runs to the plate's right-hand edge
       // and the full height.
       expect(spec.background.axis, Axis.horizontal, reason: spec.id);
       expect(spec.background.parts.last.end, isNull, reason: spec.id);
-      expect(spec.background.parts.last.section.fill!.color, isNotNull, reason: spec.id);
+      expect(
+        spec.background.parts.last.section.fill!.color,
+        isNotNull,
+        reason: spec.id,
+      );
     }
   });
 
-  test('the Bundeswehr number is the flag block, a printed hyphen and two triples', () {
-    final spec = GermanPlates.bundeswehrFor();
+  test(
+    'the Bundeswehr number is the flag block, a printed hyphen and two triples',
+    () {
+      final spec = GermanPlates.bundeswehrFor();
 
-    expect(spec.noPanel, isFalse);
-    expect(spec.country, GermanyCountry.bundeswehr);
-    expect(spec.panel.box.width, lessThan(GermanPlates.car.panel.box.width));
-    expect(spec.labels.map((l) => l.text), ['-']);
-    // The seal alone: a military vehicle records no Hauptuntersuchung.
-    expect(spec.decals, hasLength(1));
-    expect(spec.slotCount, 7);
-    final filled = List.filled(spec.slotCount, '0');
-    expect(spec.valueOfGroup('serial', filled) + spec.valueOfGroup('serialTail', filled), hasLength(6));
-  });
+      expect(spec.noPanel, isFalse);
+      expect(spec.country, GermanyCountry.bundeswehr);
+      expect(spec.panel.box.width, lessThan(GermanPlates.car.panel.box.width));
+      expect(spec.labels.map((l) => l.text), ['-']);
+      // The seal alone: a military vehicle records no Hauptuntersuchung.
+      expect(spec.decals, hasLength(1));
+      expect(spec.slotCount, 7);
+      final filled = List.filled(spec.slotCount, '0');
+      expect(
+        spec.valueOfGroup('serial', filled) +
+            spec.valueOfGroup('serialTail', filled),
+        hasLength(6),
+      );
+    },
+  );
 
   test('a shorter plate has a shorter canvas', () {
-    final short = GermanPlates.carFor(districtLetters: 1, group: GermanIdentifierGroup.a, digits: 1);
-    final long = GermanPlates.carFor(districtLetters: 3, group: GermanIdentifierGroup.c);
+    final short = GermanPlates.carFor(
+      districtLetters: 1,
+      group: GermanIdentifierGroup.a,
+      digits: 1,
+    );
+    final long = GermanPlates.carFor(
+      districtLetters: 3,
+      group: GermanIdentifierGroup.c,
+    );
 
     expect(short.canvasWidth, lessThan(long.canvasWidth));
     expect(short.canvasHeight, long.canvasHeight);
@@ -122,15 +167,27 @@ void main() {
 
   group('carFor rejects shapes the law does not issue', () {
     test('a four-letter area code', () {
-      expect(() => GermanPlates.carFor(districtLetters: 4), throwsArgumentError);
+      expect(
+        () => GermanPlates.carFor(districtLetters: 4),
+        throwsArgumentError,
+      );
     });
 
     test('a serial length outside the group', () {
-      expect(() => GermanPlates.carFor(group: GermanIdentifierGroup.b, digits: 3), throwsArgumentError);
+      expect(
+        () => GermanPlates.carFor(group: GermanIdentifierGroup.b, digits: 3),
+        throwsArgumentError,
+      );
     });
 
     test('group e behind a three-letter area code', () {
-      expect(() => GermanPlates.carFor(districtLetters: 3, group: GermanIdentifierGroup.e), throwsArgumentError);
+      expect(
+        () => GermanPlates.carFor(
+          districtLetters: 3,
+          group: GermanIdentifierGroup.e,
+        ),
+        throwsArgumentError,
+      );
     });
   });
 }

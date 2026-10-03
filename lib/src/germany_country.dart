@@ -13,7 +13,10 @@ class GermanyCountry {
     panelColor: Color(0xFF003399),
     panelTextColor: Color(0xFFFFFFFF),
     flagAspectRatio: 5 / 3,
-    flag: SvgPlateAsset('assets/flags/Flag_of_Germany.svg', package: 'germany_plate'),
+    flag: SvgPlateAsset(
+      'assets/flags/Flag_of_Germany.svg',
+      package: 'germany_plate',
+    ),
   );
 
   /// Bundeswehr `Y` plate: flag only, no euroband. Aspect ratio 39×68mm.
@@ -23,6 +26,9 @@ class GermanyCountry {
     panelColor: Color(0xFFFFFFFF),
     panelTextColor: Color(0xFF000000),
     flagAspectRatio: 39 / 68,
-    flag: SvgPlateAsset('assets/flags/Flag_of_Germany.svg', package: 'germany_plate'),
+    flag: SvgPlateAsset(
+      'assets/flags/Flag_of_Germany.svg',
+      package: 'germany_plate',
+    ),
   );
 }

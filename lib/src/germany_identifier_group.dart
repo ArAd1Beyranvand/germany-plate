@@ -7,7 +7,11 @@ enum GermanIdentifierGroup {
   d(letters: 1, minDigits: 4, maxDigits: 4),
   e(letters: 2, minDigits: 4, maxDigits: 4);
 
-  const GermanIdentifierGroup({required this.letters, required this.minDigits, required this.maxDigits});
+  const GermanIdentifierGroup({
+    required this.letters,
+    required this.minDigits,
+    required this.maxDigits,
+  });
 
   /// How many letters the identifier's letter block carries.
   final int letters;
@@ -19,7 +23,10 @@ enum GermanIdentifierGroup {
   bool admitsDigits(int digits) => digits >= minDigits && digits <= maxDigits;
 
   /// Group for a given letter/digit count, or null if not issued.
-  static GermanIdentifierGroup? of({required int letters, required int digits}) {
+  static GermanIdentifierGroup? of({
+    required int letters,
+    required int digits,
+  }) {
     for (final group in values) {
       if (group.letters == letters && group.admitsDigits(digits)) return group;
     }
