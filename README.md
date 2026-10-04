@@ -4,6 +4,8 @@ GO VEGAN 🌱
 
 ==================================
 
+From the mighty people of Iran to the people of Germany to view examples:
+
 https://platexample.ir/#/discover/germany
 
 # germany_plate
@@ -45,7 +47,6 @@ this plate alongside every one the other country packages draw.
 
 ## Also available
 
-From the mighty people of Iran to the people of Germany to view examples:
 
 - [`plate_core`](https://pub.dev/packages/plate_core) - Paint license plates.
 - [`plate_core_bloc`](https://pub.dev/packages/plate_core_bloc) - The optional bloc layer for `plate_core`.
