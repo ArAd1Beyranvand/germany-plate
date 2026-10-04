@@ -1,4 +1,4 @@
-import 'package:core_plate/core_plate.dart';
+import 'package:plate_core/core_plate.dart';
 
 /// The alphabets a German plate's slots are drawn over.
 ///

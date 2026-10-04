@@ -4,7 +4,7 @@
 /// (1-3 letters) only, not by membership in the real Unterscheidungszeichen.
 library;
 
-import 'package:core_plate/core_plate.dart';
+import 'package:plate_core/core_plate.dart';
 
 import 'germany_identifier_group.dart';
 

@@ -11,14 +11,14 @@
   `static final` is initialised lazily once per isolate, so this changes no
   behaviour — but `const spec = GermanPlates.car;` must become `final spec = …`,
   as the example now does.
-- Requires `core_plate: ^0.6.0` for `plateRegister`.
+- Requires `plate_core: ^0.6.0` for `plateRegister`.
 
 ## 0.1.0
 
 First pub.dev release.
 
-- Depends on the published `core_plate: ^0.1.0` (was a sibling `path:`
-  dependency). The import is `package:core_plate/core_plate.dart`. No API of
+- Depends on the published `plate_core: ^0.1.0` (was a sibling `path:`
+  dependency). The import is `package:plate_core/plate_core.dart`. No API of
   `germany_plate` changed.
 
 - Extracted from `plate-core` (package `plate_number`) at commit `86a0999`,
