@@ -258,8 +258,9 @@ class GermanDatedPlateValidator extends GatedPlateValidator {
     }
     if (month.length == 2 && isDigits(month)) {
       final m = int.parse(month);
-      if (m < 1 || m > 12)
+      if (m < 1 || m > 12) {
         return PlateValidation.invalid('"$month" is not a month.');
+      }
       if (day.length == 2 && isDigits(day)) {
         final d = int.parse(day);
         if (d < 1 || d > _daysInMonth[m - 1]) {
@@ -270,8 +271,9 @@ class GermanDatedPlateValidator extends GatedPlateValidator {
       }
     } else if (day.length == 2 && isDigits(day)) {
       final d = int.parse(day);
-      if (d < 1 || d > 31)
+      if (d < 1 || d > 31) {
         return PlateValidation.invalid('"$day" is not a day.');
+      }
     }
     return const PlateValidation.valid();
   }
