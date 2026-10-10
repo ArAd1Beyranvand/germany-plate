@@ -4,7 +4,7 @@ GO VEGAN 🌱
 
 ==================================
 
-From the mighty people of Iran to the people of Germany to view examples:
+From the mighty people of Iran to the thoughtful people of Germany to view examples:
 
 https://platexample.ir/#/discover/germany
 
