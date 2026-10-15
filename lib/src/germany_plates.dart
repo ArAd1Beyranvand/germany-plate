@@ -5,6 +5,7 @@ import 'germany_alphabets.dart';
 import 'german_plate_validator.dart';
 import 'germany_country.dart';
 import 'germany_identifier_group.dart';
+import 'germany_regions.dart';
 
 /// The German plate designs.
 class GermanPlates {
@@ -396,6 +397,7 @@ class GermanPlates {
           PlateTextGroup([firstSeason + 2, firstSeason + 3], key: 'seasonEnd'),
         ],
       ],
+      resolveRegion: GermanyRegions.captionOf,
     );
   }
 
@@ -600,6 +602,7 @@ class GermanPlates {
         PlateTextGroup([firstDate + 2, firstDate + 3], key: 'expiryMonth'),
         PlateTextGroup([firstDate + 4, firstDate + 5], key: 'expiryYear'),
       ],
+      resolveRegion: GermanyRegions.captionOf,
     );
   }
 

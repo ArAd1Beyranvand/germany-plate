@@ -17,6 +17,7 @@ export 'src/germany_identifier_group.dart';
 
 /// The car plate specs, including the inspection sticker and state seal decals.
 export 'src/germany_plates.dart';
+export 'src/germany_regions.dart';
 
 /// The advisory validators: [GermanPlateValidator] for registrations — format,
 /// the season block, and the forbidden letter/number combinations —
