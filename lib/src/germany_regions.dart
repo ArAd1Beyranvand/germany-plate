@@ -1,12 +1,8 @@
 import 'package:plate_core/plate_core.dart';
 
-/// Names the district (or, where a code has several, its state) from the
-/// area code.
-///
-/// Source: "List of area codes" in
-/// https://en.wikipedia.org/wiki/Vehicle_registration_plates_of_Germany
-/// Codes that need two rows to describe (a city and its surrounding district,
-/// or several districts) are named by their state.
+/// Names the district from the area code. A code that needs several rows to
+/// describe (a city and its district, or several districts) is named by its
+/// state.
 abstract final class GermanyRegions {
   static const Map<String, String> _codes = <String, String>{
     'A': 'Bavaria',
@@ -774,7 +770,6 @@ abstract final class GermanyRegions {
     return names.length == 1 ? names.single : null;
   }
 
-  /// A [PlateLabelResolver] for [PlateSpec.resolveRegion].
   static String? captionOf(String Function(String key) group) =>
       lookup(group('district'));
 }

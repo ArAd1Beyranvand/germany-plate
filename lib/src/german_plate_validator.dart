@@ -10,8 +10,6 @@ import 'germany_identifier_group.dart';
 
 /// Nationwide-forbidden letter pairs (Nazi-organisation abbreviations) plus
 /// widely-documented state-level additions and generically-offensive pairs.
-///
-/// These consts are the single source of truth for this data.
 const Set<String> _forbiddenLetterPairs = {
   'SS',
   'SA',
@@ -24,8 +22,7 @@ const Set<String> _forbiddenLetterPairs = {
   'IS',
 };
 
-/// Digit strings commonly barred nationwide/regionally for the same reason.
-/// Source of truth, as with [_forbiddenLetterPairs].
+/// Digit strings commonly barred for the same reason.
 const Set<String> _forbiddenNumbers = {'88', '18', '14'};
 
 /// The area code may carry an umlaut; the identifier may not. An umlaut in the
@@ -37,11 +34,19 @@ const Set<String> _forbiddenNumbers = {'88', '18', '14'};
 /// apart — but that restriction is long gone, and a validator still enforcing
 /// it would reject a quarter-century of real plates.
 ///
-/// Library-level rather than a static on [GermanPlateValidator] because the
-/// area code is the one register every German format shares, and
-/// [GermanSerialPlateValidator] checks the same shape.
+/// Library-level because every validator here checks the area code shape.
 final RegExp _districtPattern = RegExp(r'^[A-ZÄÖÜ]{1,3}$');
 final RegExp _identifierLetterPattern = RegExp(r'^[A-Z]{1,2}$');
+
+PlateValidation? _districtAndSerialError(String district, String serial) {
+  if (!_districtPattern.hasMatch(district)) {
+    return const PlateValidation.invalid('District code must be 1-3 letters.');
+  }
+  if (!isDigits(serial)) {
+    return const PlateValidation.invalid('The number must be digits.');
+  }
+  return null;
+}
 
 /// Validates a German car-plate district code + identifier pair.
 class GermanPlateValidator extends GatedPlateValidator {
@@ -175,13 +180,8 @@ class GermanSerialPlateValidator extends GatedPlateValidator {
     final district = entry.group('district').toUpperCase();
     final serial = entry.group('serial');
 
-    if (!_districtPattern.hasMatch(district)) {
-      return const PlateValidation.invalid(
-        'District code must be 1-3 letters.',
-      );
-    }
-    if (!isDigits(serial)) {
-      return const PlateValidation.invalid('The number must be digits.');
+    if (_districtAndSerialError(district, serial) case final error?) {
+      return error;
     }
     if (!prefix.startsWith(serial.substring(0, serial.length.clamp(0, 2)))) {
       return PlateValidation.invalid('This number begins "$prefix".');
@@ -216,13 +216,8 @@ class GermanDatedPlateValidator extends GatedPlateValidator {
     final district = entry.group('district').toUpperCase();
     final serial = entry.group('serial');
 
-    if (!_districtPattern.hasMatch(district)) {
-      return const PlateValidation.invalid(
-        'District code must be 1-3 letters.',
-      );
-    }
-    if (!isDigits(serial)) {
-      return const PlateValidation.invalid('The number must be digits.');
+    if (_districtAndSerialError(district, serial) case final error?) {
+      return error;
     }
     final prefix = this.prefix;
     if (prefix != null &&

@@ -7,16 +7,13 @@ import 'germany_country.dart';
 import 'germany_identifier_group.dart';
 import 'germany_regions.dart';
 
-/// The German plate designs.
 class GermanPlates {
   const GermanPlates._();
 
-  // Plate-space geometry, in the millimetres of a real 520x110 plate. The
-  // character sizes are fixed by law (75mm tall; letters 47.5mm wide, digits
-  // 44.5mm) and do not change with the number of characters — a plate with few
-  // characters is a *shorter plate*, not a wider-tracked one. Everything below
-  // therefore places cells at a constant pitch and lets the canvas end where
-  // the last digit does.
+  // Plate-space geometry, in the millimetres of a real 520x110 plate. Character
+  // sizes are fixed by law and do not vary with the character count: a plate
+  // with few characters is a shorter plate, not a wider-tracked one. Cells sit
+  // at a constant pitch and the canvas ends where the last cell does.
   static const double _top = 17, _height = 76;
   static const double _letterWidth = 52, _letterPitch = 58;
   static const double _digitWidth = 46, _digitPitch = 50;
@@ -33,9 +30,8 @@ class GermanPlates {
   /// Blank plate to the right of the last digit.
   static const double _rightMargin = 36;
 
-  /// The season block: two stacked two-digit months, with a rule between them,
-  /// printed at the right end of a seasonal plate. Half-height, because it has
-  /// to fit two lines where the registration fits one.
+  /// The season block: two stacked two-digit months with a rule between,
+  /// at half height so two lines fit where the registration fits one.
   static const double _seasonGap = 14;
   static const double _seasonDigitWidth = 24,
       _seasonDigitPitch = 27,
@@ -47,54 +43,39 @@ class GermanPlates {
   /// `PlateTheme.glyphStyle`'s font size over the height it is handed.
   static const double _printedGlyphRatio = 0.72;
 
-  /// A box for a [PlateLabel] that must sit on the same line as the slots
-  /// beside it.
+  /// A box for a [PlateLabel] on the same line as the slots beside it.
   ///
-  /// A slot centres its character inside its box; a label is drawn from the top
-  /// of its own. So a label handed a slot's box rides a third of a glyph too
-  /// high — which on an `H` printed hard against the serial is the difference
-  /// between a registration and a typo. Boxing the label to the glyph's real
-  /// height and centring that box in the character line fixes it in data.
+  /// A slot centres its character in its box but a label is drawn from the top
+  /// of its own, so a label given a slot's box rides too high. This boxes the
+  /// label to the glyph's real height, centred in the character line.
   static PlateBox _printedBox(double left, double width) {
     final height = _height * _printedGlyphRatio;
     return PlateBox(left, _top + (_height - height) / 2, width, height);
   }
 
-  /// Where the area code starts on a plate with no euroband — the `04`,
-  /// export and Bundeswehr formats. Clear of the rim, and nothing more.
+  /// Where the area code starts on a plate with no euroband.
   static const double _bareLeft = 20;
 
-  /// The coloured band at the right-hand end of an `04` or export plate, and
-  /// the six date digits stacked inside it.
-  ///
-  /// The band runs the full height of the face, corner to corner, and the date
-  /// is three rows of two digits centred in it. Half-height rows, as with the
-  /// season block: three lines have to fit where the registration fits one.
+  /// The full-height band at the right end of an `04` or export plate, with
+  /// the date as three half-height rows of two digits centred in it.
   static const double _bandGap = 12, _bandWidth = 62;
   static const double _bandDigitWidth = 22, _bandDigitPitch = 25;
   static const double _bandRowHeight = 28,
       _bandRowPitch = 31,
       _bandFirstRowTop = 10;
 
-  /// The Bundeswehr plate: the flag block, the printed hyphen after the `Y`,
-  /// and the gap that splits the six digits into two triples.
   static const double _flagPanelWidth = 46;
   static const double _flagGapAfter = 10;
   static const double _hyphenWidth = 30, _hyphenGapAfter = 10;
   static const double _tripleGap = 10;
 
-  /// The inks a German plate is printed in, sampled from the reference photos
-  /// in `claude/research/germany_plates/`.
-  ///
-  /// The rim follows the ink — a green plate has a green rim, a red one a red
-  /// rim — which is what [PlateSpec.inkOverride] substitutes. Black is the
-  /// theme's own and needs no constant.
+  /// Inks sampled from reference photos. The rim follows the ink, which is what
+  /// [PlateSpec.inkOverride] substitutes. Black is the theme's own.
   static const Color _greenInk = Color(0xFF1F6B2E);
   static const Color _redInk = Color(0xFFD42B1E);
 
-  /// The two band fills, sampled from the same photos. These are not inks — a
-  /// dated plate is printed black on white like an ordinary one, and the band
-  /// is the coloured field the date sits on. See [PlateBand].
+  /// Band fills, not inks: a dated plate is printed black on white and the
+  /// band is the field the date sits on.
   static const Color _shortTermBand = Color(0xFFF0A800);
   static const Color _exportBand = Color(0xFFE62A22);
 
@@ -181,13 +162,7 @@ class GermanPlates {
     required int districtLetters,
     bool inspectionSticker = true,
   }) {
-    if (districtLetters < 1 || districtLetters > 3) {
-      throw ArgumentError.value(
-        districtLetters,
-        'districtLetters',
-        'An area code carries one, two or three letters',
-      );
-    }
+    _checkDistrictLetters(districtLetters);
     return _plate(
       id: 'de.$kind${districtLetters == 2 ? '' : '.$districtLetters'}',
       districtLetters: districtLetters,
@@ -196,6 +171,16 @@ class GermanPlates {
       ink: _redInk,
       inspectionSticker: inspectionSticker,
     );
+  }
+
+  static void _checkDistrictLetters(int districtLetters) {
+    if (districtLetters < 1 || districtLetters > 3) {
+      throw ArgumentError.value(
+        districtLetters,
+        'districtLetters',
+        'An area code carries one, two or three letters',
+      );
+    }
   }
 
   static PlateSpec _carLike({
@@ -209,13 +194,7 @@ class GermanPlates {
   }) {
     final serialDigits = digits ?? group.maxDigits;
 
-    if (districtLetters < 1 || districtLetters > 3) {
-      throw ArgumentError.value(
-        districtLetters,
-        'districtLetters',
-        'An area code carries one, two or three letters',
-      );
-    }
+    _checkDistrictLetters(districtLetters);
     if (!group.admitsDigits(serialDigits)) {
       throw ArgumentError.value(
         serialDigits,
@@ -517,14 +496,7 @@ class GermanPlates {
     required int districtLetters,
     required Color band,
   }) {
-    if (districtLetters < 1 || districtLetters > 3) {
-      throw ArgumentError.value(
-        districtLetters,
-        'districtLetters',
-        'An area code carries one, two or three letters',
-      );
-    }
-
+    _checkDistrictLetters(districtLetters);
     const serialDigits = 5;
     final districtRight =
         _bareLeft + (districtLetters - 1) * _letterPitch + _letterWidth;
@@ -609,14 +581,7 @@ class GermanPlates {
   /// Bundeswehr plate: flag (no euroband) + `Y` + hyphen + 6 digits in two triples.
   /// No inspection sticker. [GermanBundeswehrValidator] enforces the `Y`.
   static PlateSpec bundeswehrFor({int districtLetters = 1}) {
-    if (districtLetters < 1 || districtLetters > 3) {
-      throw ArgumentError.value(
-        districtLetters,
-        'districtLetters',
-        'An area code carries one, two or three letters',
-      );
-    }
-
+    _checkDistrictLetters(districtLetters);
     final districtLeft = _flagPanelWidth + _flagGapAfter;
     final districtRight =
         districtLeft + (districtLetters - 1) * _letterPitch + _letterWidth;
@@ -630,7 +595,6 @@ class GermanPlates {
 
     return PlateSpec(
       id: 'de.bundeswehr${districtLetters == 1 ? '' : '.$districtLetters'}',
-      // The flag block, not the blue EU panel — see [GermanyCountry.bundeswehr].
       country: GermanyCountry.bundeswehr,
       canvasWidth: secondTripleRight + _rightMargin,
       canvasHeight: 110,
