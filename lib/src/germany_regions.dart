@@ -1,5 +1,3 @@
-import 'package:plate_core/plate_core.dart';
-
 /// Names the district from the area code. A code that needs several rows to
 /// describe (a city and its district, or several districts) is named by its
 /// state.

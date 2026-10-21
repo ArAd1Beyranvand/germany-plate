@@ -79,6 +79,11 @@ class GermanPlates {
   static const Color _shortTermBand = Color(0xFFF0A800);
   static const Color _exportBand = Color(0xFFE62A22);
 
+  static const AssetImage _stateSeal = AssetImage(
+    'assets/de_state_seal.png',
+    package: 'germany_plate',
+  );
+
   /// Standard car plate: 2-letter area code, group-d identifier (1 letter, 4 digits).
   static final PlateSpec car = carFor();
 
@@ -117,7 +122,7 @@ class GermanPlates {
     idKind: 'historic',
   );
 
-  /// Car plate with `E` suffix (electric vehicle, 2015 Electric Mobility Act).
+  /// Car plate with `E` suffix (electric vehicle).
   static PlateSpec electricFor({
     int districtLetters = 2,
     GermanIdentifierGroup group = GermanIdentifierGroup.d,
@@ -130,8 +135,8 @@ class GermanPlates {
     idKind: 'electric',
   );
 
-  /// Car plate with validity months (slots) at right: first above rule, last below.
-  /// No order required (11–03 is valid). Same args as [carFor].
+  /// Car plate with season months at right, start above the rule, end below.
+  /// Same args as [carFor].
   static PlateSpec seasonalFor({
     int districtLetters = 2,
     GermanIdentifierGroup group = GermanIdentifierGroup.d,
@@ -341,10 +346,7 @@ class GermanPlates {
             box: PlateBox(decalLeft, 14, _decalSize, _decalSize),
           ),
         PlateDecal(
-          image: const AssetImage(
-            'assets/de_state_seal.png',
-            package: 'germany_plate',
-          ),
+          image: _stateSeal,
           box: PlateBox(
             decalLeft,
             inspectionSticker ? 54 : 36,
@@ -556,10 +558,7 @@ class GermanPlates {
       ],
       decals: [
         PlateDecal(
-          image: const AssetImage(
-            'assets/de_state_seal.png',
-            package: 'germany_plate',
-          ),
+          image: _stateSeal,
           box: PlateBox(decalLeft, 36, _decalSize, _decalSize),
         ),
       ],
@@ -638,10 +637,7 @@ class GermanPlates {
       ],
       decals: [
         PlateDecal(
-          image: const AssetImage(
-            'assets/de_state_seal.png',
-            package: 'germany_plate',
-          ),
+          image: _stateSeal,
           box: PlateBox(districtRight, 60, _decalSize, _decalSize),
         ),
       ],
