@@ -20,8 +20,7 @@ abstract final class GermanyRegions {
     'AN': 'Bavaria',
     'ANA': 'Erzgebirge District (Saxony)',
     'ANG': 'Uckermark District (Brandenburg)',
-    'ANK':
-        'Vorpommern-Greifswald District<Br>(Excluding Greifswald City) (Mecklenburg-Vorpommern)',
+    'ANK': 'Vorpommern-Greifswald District<Br>(Excluding Greifswald City) (Mecklenburg-Vorpommern)',
     'AP': 'Weimarer Land District (Thuringia)',
     'APD': 'Weimarer Land District (Thuringia)',
     'ARN': 'Ilm District (Thuringia)',
@@ -84,8 +83,7 @@ abstract final class GermanyRegions {
     'BT': 'Bavaria',
     'BTF': 'Anhalt-Bitterfeld District (Saxony-Anhalt)',
     'BUL': 'Bavaria',
-    'BWL':
-        'Baden-Württemberg Government, Landtag, and Police (Baden-Württemberg)',
+    'BWL': 'Baden-Württemberg Government, Landtag, and Police (Baden-Württemberg)',
     'BYL': 'Bavaria Government and Landtag (Bavaria)',
     'BZ': 'Bautzen District (Saxony)',
     'BÖ': 'Börde District (Saxony-Anhalt)',
@@ -202,8 +200,7 @@ abstract final class GermanyRegions {
     'GAP': 'Garmisch-Partenkirchen District (Bavaria)',
     'GC': 'Zwickau District (Saxony)',
     'GD': 'Ostalb District (Baden-Württemberg)',
-    'GDB':
-        'Nordwestmecklenburg District<Br>(Excluding Wismar City) (Mecklenburg-Vorpommern)',
+    'GDB': 'Nordwestmecklenburg District<Br>(Excluding Wismar City) (Mecklenburg-Vorpommern)',
     'GE': 'Gelsenkirchen City (North Rhine-Westphalia)',
     'GEL': 'Kleve District (North Rhine-Westphalia)',
     'GEO': 'Bavaria',
@@ -217,8 +214,7 @@ abstract final class GermanyRegions {
     'GL': 'Rheinisch-Bergischer District (North Rhine-Westphalia)',
     'GLA': 'Recklinghausen District (North Rhine-Westphalia)',
     'GM': 'Oberbergischer District (North Rhine-Westphalia)',
-    'GMN':
-        'Vorpommern-Rügen District<Br>(Excluding Stralsund City) (Mecklenburg-Vorpommern)',
+    'GMN': 'Vorpommern-Rügen District<Br>(Excluding Stralsund City) (Mecklenburg-Vorpommern)',
     'GN': 'Main-Kinzig District<Br>(Excluding Hanau City) (Hesse)',
     'GNT': 'Jerichower Land District (Saxony-Anhalt)',
     'GOA': 'Rhein-Hunsrück District (Rhineland-Palatinate)',
@@ -236,10 +232,8 @@ abstract final class GermanyRegions {
     'GUB': 'Spree-Neiße District (Brandenburg)',
     'GUN': 'Weißenburg-Gunzenhausen District (Bavaria)',
     'GV': 'Rhein District Neuss (North Rhine-Westphalia)',
-    'GVM':
-        'Nordwestmecklenburg District<Br>(Excluding Wismar City) (Mecklenburg-Vorpommern)',
-    'GW':
-        'Vorpommern-Greifswald District<Br>(Excluding Greifswald City) (Mecklenburg-Vorpommern)',
+    'GVM': 'Nordwestmecklenburg District<Br>(Excluding Wismar City) (Mecklenburg-Vorpommern)',
+    'GW': 'Vorpommern-Greifswald District<Br>(Excluding Greifswald City) (Mecklenburg-Vorpommern)',
     'GZ': 'Günzburg District (Bavaria)',
     'GÖ': 'Lower Saxony',
     'GÜ': 'Rostock District (Mecklenburg-Vorpommern)',
@@ -302,8 +296,7 @@ abstract final class GermanyRegions {
     'HY': 'Bautzen District (Saxony)',
     'HZ': 'Harz District (Saxony-Anhalt)',
     'HÖS': 'Erlangen-Höchstadt District (Bavaria)',
-    'IGB':
-        'St. Ingbert City<Br>(A subdivision of Saarpfalz District) (Saarland)',
+    'IGB': 'St. Ingbert City<Br>(A subdivision of Saarpfalz District) (Saarland)',
     'IK': 'Ilm District (Thuringia)',
     'IL': 'Ilm District (Thuringia)',
     'ILL': 'Neu-Ulm District (Bavaria)',
@@ -331,8 +324,7 @@ abstract final class GermanyRegions {
     'KLE': 'Kleve District (North Rhine-Westphalia)',
     'KLZ': 'Altmark District Salzwedel (Saxony-Anhalt)',
     'KM': 'Bautzen District (Saxony)',
-    'KN':
-        'Konstanz District<Br>(Excluding Büsingen am Hochrhein Municipality) (Baden-Württemberg)',
+    'KN': 'Konstanz District<Br>(Excluding Büsingen am Hochrhein Municipality) (Baden-Württemberg)',
     'KO': 'Koblenz City (Rhineland-Palatinate)',
     'KR': 'Krefeld City (North Rhine-Westphalia)',
     'KRU': 'Günzburg District (Bavaria)',
@@ -430,8 +422,7 @@ abstract final class GermanyRegions {
         'Mecklenburgische Seenplatte District<Br>(Excluding Neubrandenburg City) (Mecklenburg-Vorpommern)',
     'MTK': 'Main-Taunus District (Hesse)',
     'MTL': 'Leipzig District (Saxony)',
-    'MVL':
-        'Mecklenburg-Vorpommern Government, Landtag, and Police (Mecklenburg-Vorpommern)',
+    'MVL': 'Mecklenburg-Vorpommern Government, Landtag, and Police (Mecklenburg-Vorpommern)',
     'MW': 'Mittelsachsen District (Saxony)',
     'MY': 'Mayen-Koblenz District (Rhineland-Palatinate)',
     'MYK': 'Mayen-Koblenz District (Rhineland-Palatinate)',
@@ -470,15 +461,12 @@ abstract final class GermanyRegions {
     'NOR': 'Aurich District (Lower Saxony)',
     'NP': 'Ostprignitz-Ruppin District (Brandenburg)',
     'NR': 'Rhineland-Palatinate',
-    'NRW':
-        'North Rhine-Westphalia Government, Landtag, and State Police (North Rhine-Westphalia)',
+    'NRW': 'North Rhine-Westphalia Government, Landtag, and State Police (North Rhine-Westphalia)',
     'NT': 'Esslingen District (Baden-Württemberg)',
     'NU': 'Neu-Ulm District (Bavaria)',
-    'NVP':
-        'Vorpommern-Rügen District<Br>(Excluding Stralsund City) (Mecklenburg-Vorpommern)',
+    'NVP': 'Vorpommern-Rügen District<Br>(Excluding Stralsund City) (Mecklenburg-Vorpommern)',
     'NW': 'Neustadt an der Weinstraße City (Rhineland-Palatinate)',
-    'NWM':
-        'Nordwestmecklenburg District<Br>(Excluding Wismar City) (Mecklenburg-Vorpommern)',
+    'NWM': 'Nordwestmecklenburg District<Br>(Excluding Wismar City) (Mecklenburg-Vorpommern)',
     'NY': 'Görlitz District (Saxony)',
     'NZ':
         'Mecklenburgische Seenplatte District<Br>(Excluding Neubrandenburg City) (Mecklenburg-Vorpommern)',
@@ -527,8 +515,7 @@ abstract final class GermanyRegions {
     'PR': 'Prignitz District (Brandenburg)',
     'PRÜ': 'Eifel District Bitburg-Prüm (Rhineland-Palatinate)',
     'PS': 'Rhineland-Palatinate',
-    'PW':
-        'Vorpommern-Greifswald District<Br>(Excluding Greifswald City) (Mecklenburg-Vorpommern)',
+    'PW': 'Vorpommern-Greifswald District<Br>(Excluding Greifswald City) (Mecklenburg-Vorpommern)',
     'PZ': 'Uckermark District (Brandenburg)',
     'QFT': 'Saale District (Saxony-Anhalt)',
     'QLB': 'Harz District (Saxony-Anhalt)',
@@ -536,8 +523,7 @@ abstract final class GermanyRegions {
     'RA': 'Rastatt District (Baden-Württemberg)',
     'RC': 'Vogtland District (Saxony)',
     'RD': 'Rendsburg-Eckernförde District (Schleswig-Holstein)',
-    'RDG':
-        'Vorpommern-Rügen District<Br>(Excluding Stralsund City) (Mecklenburg-Vorpommern)',
+    'RDG': 'Vorpommern-Rügen District<Br>(Excluding Stralsund City) (Mecklenburg-Vorpommern)',
     'RE': 'Recklinghausen District (North Rhine-Westphalia)',
     'REG': 'Regen District (Bavaria)',
     'REH': 'Bavaria',
@@ -560,8 +546,7 @@ abstract final class GermanyRegions {
     'ROT': 'Ansbach District (Bavaria)',
     'ROW': 'Rotenburg (Wümme) District (Lower Saxony)',
     'RP': 'Rhein-Pfalz District (Rhineland-Palatinate)',
-    'RPL':
-        'Rhineland-Palatinate Government, Landtag, and State Police (Rhineland-Palatinate)',
+    'RPL': 'Rhineland-Palatinate Government, Landtag, and State Police (Rhineland-Palatinate)',
     'RS': 'Remscheid City (North Rhine-Westphalia)',
     'RSL': 'Dessau-Roßlau City (Saxony-Anhalt)',
     'RT': 'Reutlingen District (Baden-Württemberg)',
@@ -570,8 +555,7 @@ abstract final class GermanyRegions {
     'RW': 'Rottweil District (Baden-Württemberg)',
     'RZ': 'Herzogtum Lauenburg District (Schleswig-Holstein)',
     'RÜD': 'Rheingau-Taunus District (Hesse)',
-    'RÜG':
-        'Vorpommern-Rügen District<Br>(Excluding Stralsund City) (Mecklenburg-Vorpommern)',
+    'RÜG': 'Vorpommern-Rügen District<Br>(Excluding Stralsund City) (Mecklenburg-Vorpommern)',
     'S': 'Stuttgart City (Baden-Württemberg)',
     'SAB': 'Trier-Saarburg District (Rhineland-Palatinate)',
     'SAD': 'Schwandorf District (Bavaria)',
@@ -579,8 +563,7 @@ abstract final class GermanyRegions {
     'SAN': 'Bavaria',
     'SAW': 'Altmark District Salzwedel (Saxony-Anhalt)',
     'SB': 'Saarbrücken Region<Br>(Excluding Völklingen City) (Saarland)',
-    'SBG':
-        'Vorpommern-Greifswald District<Br>(Excluding Greifswald City) (Mecklenburg-Vorpommern)',
+    'SBG': 'Vorpommern-Greifswald District<Br>(Excluding Greifswald City) (Mecklenburg-Vorpommern)',
     'SBK': 'Salzland District (Saxony-Anhalt)',
     'SC': 'Schwabach City (Bavaria)',
     'SCZ': 'Saale-Orla District (Thuringia)',
@@ -663,8 +646,7 @@ abstract final class GermanyRegions {
     'TÖL': 'Bad Tölz-Wolfratshausen District (Bavaria)',
     'TÜ': 'Tübingen District (Baden-Württemberg)',
     'UE': 'Uelzen District (Lower Saxony)',
-    'UEM':
-        'Vorpommern-Greifswald District<Br>(Excluding Greifswald City) (Mecklenburg-Vorpommern)',
+    'UEM': 'Vorpommern-Greifswald District<Br>(Excluding Greifswald City) (Mecklenburg-Vorpommern)',
     'UFF': 'Neustadt an der Aisch-Bad Windsheim District (Bavaria)',
     'UH': 'Unstrut-Hainich District (Thuringia)',
     'UL': 'Baden-Württemberg',
@@ -676,15 +658,13 @@ abstract final class GermanyRegions {
     'VB': 'Vogelsberg District (Hesse)',
     'VEC': 'Vechta District (Lower Saxony)',
     'VER': 'Verden District (Lower Saxony)',
-    'VG':
-        'Vorpommern-Greifswald District<Br>(Excluding Greifswald City) (Mecklenburg-Vorpommern)',
+    'VG': 'Vorpommern-Greifswald District<Br>(Excluding Greifswald City) (Mecklenburg-Vorpommern)',
     'VIB': 'Bavaria',
     'VIE': 'Viersen District (North Rhine-Westphalia)',
     'VIT': 'Regen District (Bavaria)',
     'VK': 'Völklingen City<Br>(A subdivision of Saarbrücken Region) (Saarland)',
     'VOH': 'Neustadt an der Waldnaab District (Bavaria)',
-    'VR':
-        'Vorpommern-Rügen District<Br>(Excluding Stralsund City) (Mecklenburg-Vorpommern)',
+    'VR': 'Vorpommern-Rügen District<Br>(Excluding Stralsund City) (Mecklenburg-Vorpommern)',
     'VS': 'Schwarzwald-Baar District (Baden-Württemberg)',
     'W': 'Wuppertal City (North Rhine-Westphalia)',
     'WA': 'Waldeck-Frankenberg District (Hesse)',
@@ -706,14 +686,12 @@ abstract final class GermanyRegions {
     'WHV': 'Wilhelmshaven City (Lower Saxony)',
     'WI': 'Wiesbaden City (Hesse)',
     'WIL': 'Bernkastel-Wittlich District (Rhineland-Palatinate)',
-    'WIS':
-        'Nordwestmecklenburg District<Br>(Excluding Wismar City) (Mecklenburg-Vorpommern)',
+    'WIS': 'Nordwestmecklenburg District<Br>(Excluding Wismar City) (Mecklenburg-Vorpommern)',
     'WIT': 'Ennepe-Ruhr District (North Rhine-Westphalia)',
     'WIZ': 'Werra-Meißner District (Hesse)',
     'WK': 'Ostprignitz-Ruppin District (Brandenburg)',
     'WL': 'Harburg District (Lower Saxony)',
-    'WLG':
-        'Vorpommern-Greifswald District<Br>(Excluding Greifswald City) (Mecklenburg-Vorpommern)',
+    'WLG': 'Vorpommern-Greifswald District<Br>(Excluding Greifswald City) (Mecklenburg-Vorpommern)',
     'WM': 'Weilheim-Schongau District (Bavaria)',
     'WMS': 'Börde District (Saxony-Anhalt)',
     'WN': 'Rems-Murr District (Baden-Württemberg)',
@@ -768,6 +746,5 @@ abstract final class GermanyRegions {
     return names.length == 1 ? names.single : null;
   }
 
-  static String? captionOf(String Function(String key) group) =>
-      lookup(group('district'));
+  static String? captionOf(String Function(String key) group) => lookup(group('district'));
 }

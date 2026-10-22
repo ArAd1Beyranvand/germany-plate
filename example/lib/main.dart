@@ -18,8 +18,7 @@ class ExampleApp extends StatelessWidget {
             child: PlateCanvas(
               spec: spec,
               validator: const GermanPlateValidator(),
-              autoValidate:
-                  true, // paints red on an invalid plate; never blocks input
+              autoValidate: true, // paints red on an invalid plate; never blocks input
               onChooseCharacter: (alphabet) async => null,
             ),
           ),
