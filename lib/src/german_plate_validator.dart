@@ -10,7 +10,17 @@ import 'germany_identifier_group.dart';
 
 /// Nationwide-forbidden letter pairs (Nazi-organisation abbreviations) plus
 /// widely-documented state-level additions and generically-offensive pairs.
-const Set<String> _forbiddenLetterPairs = {'SS', 'SA', 'KZ', 'HJ', 'NS', 'AH', 'HH', 'SD', 'IS'};
+const Set<String> _forbiddenLetterPairs = {
+  'SS',
+  'SA',
+  'KZ',
+  'HJ',
+  'NS',
+  'AH',
+  'HH',
+  'SD',
+  'IS',
+};
 
 /// Digit strings commonly barred for the same reason.
 const Set<String> _forbiddenNumbers = {'88', '18', '14'};
@@ -57,12 +67,18 @@ class GermanPlateValidator extends GatedPlateValidator {
     if (!registration.isValid) return registration;
     // Empty on every spec that has no season block, so this costs a seasonal
     // plate a check and an ordinary one nothing.
-    return validateSeason(start: entry.group('seasonStart'), end: entry.group('seasonEnd'));
+    return validateSeason(
+      start: entry.group('seasonStart'),
+      end: entry.group('seasonEnd'),
+    );
   }
 
   /// Two months of validity (e.g., 03–10 for spring/fall). No order required:
   /// 11–03 is valid (winter). Quiet about incomplete months (e.g., '0').
-  static PlateValidation validateSeason({required String start, required String end}) {
+  static PlateValidation validateSeason({
+    required String start,
+    required String end,
+  }) {
     for (final month in [start, end]) {
       if (month.length < 2) continue;
       if (!isDigitsOfLength(month, 2)) {
@@ -86,15 +102,21 @@ class GermanPlateValidator extends GatedPlateValidator {
     final digits = identifierDigits;
 
     if (!_districtPattern.hasMatch(d)) {
-      return const PlateValidation.invalid('District code must be 1-3 letters.');
+      return const PlateValidation.invalid(
+        'District code must be 1-3 letters.',
+      );
     }
 
     if (!_identifierLetterPattern.hasMatch(letters)) {
-      return const PlateValidation.invalid('Identifier letters must be 1-2 letters.');
+      return const PlateValidation.invalid(
+        'Identifier letters must be 1-2 letters.',
+      );
     }
 
     if (digits.isNotEmpty && !(isDigits(digits) && digits.length <= 4)) {
-      return const PlateValidation.invalid('Identifier digits must be 1-4 digits.');
+      return const PlateValidation.invalid(
+        'Identifier digits must be 1-4 digits.',
+      );
     }
 
     if (digits.startsWith('0')) {
@@ -102,11 +124,17 @@ class GermanPlateValidator extends GatedPlateValidator {
     }
 
     if (d.length + letters.length + digits.length > 8) {
-      return const PlateValidation.invalid('Plate exceeds the 8-character maximum.');
+      return const PlateValidation.invalid(
+        'Plate exceeds the 8-character maximum.',
+      );
     }
 
     if (digits.isNotEmpty &&
-        GermanIdentifierGroup.of(letters: letters.length, digits: digits.length) == null) {
+        GermanIdentifierGroup.of(
+              letters: letters.length,
+              digits: digits.length,
+            ) ==
+            null) {
       return PlateValidation.invalid(
         '${letters.length} letter(s) and ${digits.length} digit(s) is not an issued identifier shape.',
       );
@@ -116,8 +144,12 @@ class GermanPlateValidator extends GatedPlateValidator {
       return PlateValidation.invalid('"$letters" is a forbidden combination.');
     }
 
-    if (d.length == 1 && letters.length == 1 && _forbiddenLetterPairs.contains('$d$letters')) {
-      return PlateValidation.invalid('"$d$letters" is a forbidden combination.');
+    if (d.length == 1 &&
+        letters.length == 1 &&
+        _forbiddenLetterPairs.contains('$d$letters')) {
+      return PlateValidation.invalid(
+        '"$d$letters" is a forbidden combination.',
+      );
     }
 
     if (digits.isNotEmpty && _forbiddenNumbers.contains(digits)) {
@@ -188,7 +220,8 @@ class GermanDatedPlateValidator extends GatedPlateValidator {
       return error;
     }
     final prefix = this.prefix;
-    if (prefix != null && !prefix.startsWith(serial.substring(0, serial.length.clamp(0, 2)))) {
+    if (prefix != null &&
+        !prefix.startsWith(serial.substring(0, serial.length.clamp(0, 2)))) {
       return PlateValidation.invalid('This number begins "$prefix".');
     }
     if (serial.length > 5) {
@@ -208,7 +241,11 @@ class GermanDatedPlateValidator extends GatedPlateValidator {
     required String month,
     required String year,
   }) {
-    for (final (name, value) in [('day', day), ('month', month), ('year', year)]) {
+    for (final (name, value) in [
+      ('day', day),
+      ('month', month),
+      ('year', year),
+    ]) {
       if (value.isEmpty || value.length < 2) continue;
       if (!isDigitsOfLength(value, 2)) {
         return PlateValidation.invalid('The expiry $name is two digits.');
@@ -222,7 +259,9 @@ class GermanDatedPlateValidator extends GatedPlateValidator {
       if (day.length == 2 && isDigits(day)) {
         final d = int.parse(day);
         if (d < 1 || d > _daysInMonth[m - 1]) {
-          return PlateValidation.invalid('"$day" is not a day of month $month.');
+          return PlateValidation.invalid(
+            '"$day" is not a day of month $month.',
+          );
         }
       }
     } else if (day.length == 2 && isDigits(day)) {
@@ -234,7 +273,20 @@ class GermanDatedPlateValidator extends GatedPlateValidator {
     return const PlateValidation.valid();
   }
 
-  static const List<int> _daysInMonth = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  static const List<int> _daysInMonth = [
+    31,
+    29,
+    31,
+    30,
+    31,
+    30,
+    31,
+    31,
+    30,
+    31,
+    30,
+    31,
+  ];
 }
 
 /// Validates a Bundeswehr `Y` plate: `Y` in the area code, then six digits.

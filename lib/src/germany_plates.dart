@@ -33,7 +33,9 @@ class GermanPlates {
   /// The season block: two stacked two-digit months with a rule between,
   /// at half height so two lines fit where the registration fits one.
   static const double _seasonGap = 14;
-  static const double _seasonDigitWidth = 24, _seasonDigitPitch = 27, _seasonHeight = 40;
+  static const double _seasonDigitWidth = 24,
+      _seasonDigitPitch = 27,
+      _seasonHeight = 40;
   static const double _seasonTop = 10, _seasonLowerTop = 60;
   static const double _seasonRuleTop = 53, _seasonRuleHeight = 4;
 
@@ -58,7 +60,9 @@ class GermanPlates {
   /// the date as three half-height rows of two digits centred in it.
   static const double _bandGap = 12, _bandWidth = 62;
   static const double _bandDigitWidth = 22, _bandDigitPitch = 25;
-  static const double _bandRowHeight = 28, _bandRowPitch = 31, _bandFirstRowTop = 10;
+  static const double _bandRowHeight = 28,
+      _bandRowPitch = 31,
+      _bandFirstRowTop = 10;
 
   static const double _flagPanelWidth = 46;
   static const double _flagGapAfter = 10;
@@ -89,7 +93,8 @@ class GermanPlates {
     int districtLetters = 2,
     GermanIdentifierGroup group = GermanIdentifierGroup.d,
     int? digits,
-  }) => _carLike(districtLetters: districtLetters, group: group, digits: digits);
+  }) =>
+      _carLike(districtLetters: districtLetters, group: group, digits: digits);
 
   /// Car plate printed in green (tax-exempt vehicles). Takes same args as [carFor].
   static PlateSpec greenFor({
@@ -151,8 +156,11 @@ class GermanPlates {
 
   /// Collector plate (`07`): red on white, area code + 5 digits starting 07.
   /// Usable across multiple vehicles. No inspection sticker. Not judged by validator.
-  static PlateSpec collectorFor({int districtLetters = 2}) =>
-      _serialPlate(kind: 'collector', districtLetters: districtLetters, inspectionSticker: false);
+  static PlateSpec collectorFor({int districtLetters = 2}) => _serialPlate(
+    kind: 'collector',
+    districtLetters: districtLetters,
+    inspectionSticker: false,
+  );
 
   static PlateSpec _serialPlate({
     required String kind,
@@ -199,7 +207,11 @@ class GermanPlates {
         'Group ${group.name} is issued with ${group.minDigits}-${group.maxDigits} digits',
       );
     }
-    final total = districtLetters + group.letters + serialDigits + (suffix == null ? 0 : 1);
+    final total =
+        districtLetters +
+        group.letters +
+        serialDigits +
+        (suffix == null ? 0 : 1);
     if (total > 8) {
       throw ArgumentError(
         'A $districtLetters-letter area code with a group-${group.name} '
@@ -229,15 +241,21 @@ class GermanPlates {
     bool inspectionSticker = true,
     bool season = false,
   }) {
-    final districtRight = _districtLeft + (districtLetters - 1) * _letterPitch + _letterWidth;
+    final districtRight =
+        _districtLeft + (districtLetters - 1) * _letterPitch + _letterWidth;
     final decalLeft = districtRight + _decalGapBefore;
     final identifierLeft = decalLeft + _decalSize + _decalGapAfter;
     final identifierRight = identifierLetters == 0
         ? identifierLeft - _serialGap
-        : identifierLeft + (identifierLetters - 1) * _letterPitch + _letterWidth;
+        : identifierLeft +
+              (identifierLetters - 1) * _letterPitch +
+              _letterWidth;
     final serialLeft = identifierRight + _serialGap;
-    final serialRight = serialLeft + (serialDigits - 1) * _digitPitch + _digitWidth;
-    final charactersRight = suffix == null ? serialRight : serialRight + _letterWidth;
+    final serialRight =
+        serialLeft + (serialDigits - 1) * _digitPitch + _digitWidth;
+    final charactersRight = suffix == null
+        ? serialRight
+        : serialRight + _letterWidth;
     final seasonLeft = charactersRight + _seasonGap;
     final seasonRight = seasonLeft + _seasonDigitPitch + _seasonDigitWidth;
     final contentRight = season ? seasonRight : charactersRight;
@@ -310,18 +328,31 @@ class GermanPlates {
       rules: [
         if (season)
           PlateRule(
-            box: PlateBox(seasonLeft, _seasonRuleTop, seasonRight - seasonLeft, _seasonRuleHeight),
+            box: PlateBox(
+              seasonLeft,
+              _seasonRuleTop,
+              seasonRight - seasonLeft,
+              _seasonRuleHeight,
+            ),
           ),
       ],
       decals: [
         if (inspectionSticker)
           PlateDecal(
-            image: const AssetImage('assets/de_inspection_sticker.png', package: 'germany_plate'),
+            image: const AssetImage(
+              'assets/de_inspection_sticker.png',
+              package: 'germany_plate',
+            ),
             box: PlateBox(decalLeft, 14, _decalSize, _decalSize),
           ),
         PlateDecal(
           image: _stateSeal,
-          box: PlateBox(decalLeft, inspectionSticker ? 54 : 36, _decalSize, _decalSize),
+          box: PlateBox(
+            decalLeft,
+            inspectionSticker ? 54 : 36,
+            _decalSize,
+            _decalSize,
+          ),
         ),
       ],
       labels: [
@@ -333,11 +364,15 @@ class GermanPlates {
           ),
       ],
       textGroups: [
-        PlateTextGroup([for (var i = 0; i < districtLetters; i++) i], key: 'district'),
+        PlateTextGroup([
+          for (var i = 0; i < districtLetters; i++) i,
+        ], key: 'district'),
         PlateTextGroup([
           for (var i = 0; i < identifierLetters; i++) firstIdentifier + i,
         ], key: 'letters'),
-        PlateTextGroup([for (var i = 0; i < serialDigits; i++) firstSerial + i], key: 'serial'),
+        PlateTextGroup([
+          for (var i = 0; i < serialDigits; i++) firstSerial + i,
+        ], key: 'serial'),
         if (season) ...[
           PlateTextGroup([firstSeason, firstSeason + 1], key: 'seasonStart'),
           PlateTextGroup([firstSeason + 2, firstSeason + 3], key: 'seasonEnd'),
@@ -355,63 +390,108 @@ class GermanPlates {
     return '';
   }
 
-  static const Map<String, String> _suffixKinds = {'historic': 'H', 'electric': 'E'};
+  static const Map<String, String> _suffixKinds = {
+    'historic': 'H',
+    'electric': 'E',
+  };
 
   /// True if [spec] carries season months (checks textGroups, not id).
   static bool isSeasonal(PlateSpec spec) =>
       spec.textGroups.any((group) => group.key == 'seasonStart');
 
   /// All legal car shapes in stable order.
-  static final List<PlateSpec> allCars = List<PlateSpec>.unmodifiable(<PlateSpec>[
-    for (final shape in _shapes)
-      carFor(districtLetters: shape.$1, group: shape.$2, digits: shape.$3),
-  ]);
+  static final List<PlateSpec> allCars =
+      List<PlateSpec>.unmodifiable(<PlateSpec>[
+        for (final shape in _shapes)
+          carFor(districtLetters: shape.$1, group: shape.$2, digits: shape.$3),
+      ]);
 
   /// Car variants: green, seasonal, historic, electric. Separate from [allCars].
-  static final List<PlateSpec> allCarVariants = List<PlateSpec>.unmodifiable(<PlateSpec>[
-    for (final (districtLetters, group, digits) in _shapes) ...[
-      greenFor(districtLetters: districtLetters, group: group, digits: digits),
-      seasonalFor(districtLetters: districtLetters, group: group, digits: digits),
-      if (districtLetters + group.letters + digits < 8) ...[
-        historicFor(districtLetters: districtLetters, group: group, digits: digits),
-        electricFor(districtLetters: districtLetters, group: group, digits: digits),
+  static final List<PlateSpec> allCarVariants = List<PlateSpec>.unmodifiable(
+    <PlateSpec>[
+      for (final (districtLetters, group, digits) in _shapes) ...[
+        greenFor(
+          districtLetters: districtLetters,
+          group: group,
+          digits: digits,
+        ),
+        seasonalFor(
+          districtLetters: districtLetters,
+          group: group,
+          digits: digits,
+        ),
+        if (districtLetters + group.letters + digits < 8) ...[
+          historicFor(
+            districtLetters: districtLetters,
+            group: group,
+            digits: digits,
+          ),
+          electricFor(
+            districtLetters: districtLetters,
+            group: group,
+            digits: digits,
+          ),
+        ],
       ],
     ],
-  ]);
+  );
 
   /// Non-registration `06` and `07` serial plates. Not judged by [GermanPlateValidator].
-  static final List<PlateSpec> allSerialPlates = List<PlateSpec>.unmodifiable(<PlateSpec>[
-    for (var districtLetters = 1; districtLetters <= 3; districtLetters++) ...[
-      dealerFor(districtLetters: districtLetters),
-      collectorFor(districtLetters: districtLetters),
+  static final List<PlateSpec> allSerialPlates = List<PlateSpec>.unmodifiable(
+    <PlateSpec>[
+      for (
+        var districtLetters = 1;
+        districtLetters <= 3;
+        districtLetters++
+      ) ...[
+        dealerFor(districtLetters: districtLetters),
+        collectorFor(districtLetters: districtLetters),
+      ],
     ],
-  ]);
+  );
 
   /// Non-registration `04` and export plates with expiry dates. Not judged by validator.
-  static final List<PlateSpec> allDatedPlates = List<PlateSpec>.unmodifiable(<PlateSpec>[
-    for (var districtLetters = 1; districtLetters <= 3; districtLetters++) ...[
-      shortTermFor(districtLetters: districtLetters),
-      exportFor(districtLetters: districtLetters),
+  static final List<PlateSpec> allDatedPlates = List<PlateSpec>.unmodifiable(
+    <PlateSpec>[
+      for (
+        var districtLetters = 1;
+        districtLetters <= 3;
+        districtLetters++
+      ) ...[
+        shortTermFor(districtLetters: districtLetters),
+        exportFor(districtLetters: districtLetters),
+      ],
     ],
-  ]);
+  );
 
   /// Validator for [spec]. Non-registrations get serial/dated validators.
   static PlateValidator validatorFor(PlateSpec spec) => switch (spec.id) {
-    final id when id.startsWith('de.dealer') => const GermanSerialPlateValidator.dealer(),
-    final id when id.startsWith('de.collector') => const GermanSerialPlateValidator.collector(),
-    final id when id.startsWith('de.shortterm') => const GermanDatedPlateValidator.shortTerm(),
-    final id when id.startsWith('de.export') => const GermanDatedPlateValidator.export(),
-    final id when id.startsWith('de.bundeswehr') => const GermanBundeswehrValidator(),
+    final id when id.startsWith('de.dealer') =>
+      const GermanSerialPlateValidator.dealer(),
+    final id when id.startsWith('de.collector') =>
+      const GermanSerialPlateValidator.collector(),
+    final id when id.startsWith('de.shortterm') =>
+      const GermanDatedPlateValidator.shortTerm(),
+    final id when id.startsWith('de.export') =>
+      const GermanDatedPlateValidator.export(),
+    final id when id.startsWith('de.bundeswehr') =>
+      const GermanBundeswehrValidator(),
     _ => const GermanPlateValidator(),
   };
 
   /// Short-term plate (`04`): black on white + yellow band with DD/MM/YY expiry.
-  static PlateSpec shortTermFor({int districtLetters = 2}) =>
-      _rightBandPlate(kind: 'shortterm', districtLetters: districtLetters, band: _shortTermBand);
+  static PlateSpec shortTermFor({int districtLetters = 2}) => _rightBandPlate(
+    kind: 'shortterm',
+    districtLetters: districtLetters,
+    band: _shortTermBand,
+  );
 
   /// Export plate (`Ausfuhrkennzeichen`): like short-term but red band instead.
-  static PlateSpec exportFor({int districtLetters = 2}) =>
-      _rightBandPlate(kind: 'export', districtLetters: districtLetters, band: _exportBand);
+  static PlateSpec exportFor({int districtLetters = 2}) => _rightBandPlate(
+    kind: 'export',
+    districtLetters: districtLetters,
+    band: _exportBand,
+  );
 
   static PlateSpec _rightBandPlate({
     required String kind,
@@ -420,13 +500,16 @@ class GermanPlates {
   }) {
     _checkDistrictLetters(districtLetters);
     const serialDigits = 5;
-    final districtRight = _bareLeft + (districtLetters - 1) * _letterPitch + _letterWidth;
+    final districtRight =
+        _bareLeft + (districtLetters - 1) * _letterPitch + _letterWidth;
     final decalLeft = districtRight + _decalGapBefore;
     final serialLeft = decalLeft + _decalSize + _decalGapAfter;
-    final serialRight = serialLeft + (serialDigits - 1) * _digitPitch + _digitWidth;
+    final serialRight =
+        serialLeft + (serialDigits - 1) * _digitPitch + _digitWidth;
     final bandLeft = serialRight + _bandGap;
     final canvasWidth = bandLeft + _bandWidth;
-    final dateLeft = bandLeft + (_bandWidth - (_bandDigitPitch + _bandDigitWidth)) / 2;
+    final dateLeft =
+        bandLeft + (_bandWidth - (_bandDigitPitch + _bandDigitWidth)) / 2;
 
     final firstDate = districtLetters + serialDigits;
 
@@ -473,10 +556,19 @@ class GermanPlates {
             pitch: _bandDigitPitch,
           ),
       ],
-      decals: [PlateDecal(image: _stateSeal, box: PlateBox(decalLeft, 36, _decalSize, _decalSize))],
+      decals: [
+        PlateDecal(
+          image: _stateSeal,
+          box: PlateBox(decalLeft, 36, _decalSize, _decalSize),
+        ),
+      ],
       textGroups: [
-        PlateTextGroup([for (var i = 0; i < districtLetters; i++) i], key: 'district'),
-        PlateTextGroup([for (var i = 0; i < serialDigits; i++) districtLetters + i], key: 'serial'),
+        PlateTextGroup([
+          for (var i = 0; i < districtLetters; i++) i,
+        ], key: 'district'),
+        PlateTextGroup([
+          for (var i = 0; i < serialDigits; i++) districtLetters + i,
+        ], key: 'serial'),
         PlateTextGroup([firstDate, firstDate + 1], key: 'expiryDay'),
         PlateTextGroup([firstDate + 2, firstDate + 3], key: 'expiryMonth'),
         PlateTextGroup([firstDate + 4, firstDate + 5], key: 'expiryYear'),
@@ -490,7 +582,8 @@ class GermanPlates {
   static PlateSpec bundeswehrFor({int districtLetters = 1}) {
     _checkDistrictLetters(districtLetters);
     final districtLeft = _flagPanelWidth + _flagGapAfter;
-    final districtRight = districtLeft + (districtLetters - 1) * _letterPitch + _letterWidth;
+    final districtRight =
+        districtLeft + (districtLetters - 1) * _letterPitch + _letterWidth;
     final hyphenRight = districtRight + _hyphenWidth;
     final serialLeft = hyphenRight + _hyphenGapAfter;
     final firstTripleRight = serialLeft + 2 * _digitPitch + _digitWidth;
@@ -543,38 +636,63 @@ class GermanPlates {
         ),
       ],
       decals: [
-        PlateDecal(image: _stateSeal, box: PlateBox(districtRight, 60, _decalSize, _decalSize)),
+        PlateDecal(
+          image: _stateSeal,
+          box: PlateBox(districtRight, 60, _decalSize, _decalSize),
+        ),
       ],
       labels: [
-        PlateLabel(text: '-', box: _printedBox(districtRight, _hyphenWidth), glyphHeight: _height),
+        PlateLabel(
+          text: '-',
+          box: _printedBox(districtRight, _hyphenWidth),
+          glyphHeight: _height,
+        ),
       ],
       textGroups: [
-        PlateTextGroup([for (var i = 0; i < districtLetters; i++) i], key: 'district'),
-        PlateTextGroup([firstSerial, firstSerial + 1, firstSerial + 2], key: 'serial'),
-        PlateTextGroup([firstSerial + 3, firstSerial + 4, firstSerial + 5], key: 'serialTail'),
+        PlateTextGroup([
+          for (var i = 0; i < districtLetters; i++) i,
+        ], key: 'district'),
+        PlateTextGroup([
+          firstSerial,
+          firstSerial + 1,
+          firstSerial + 2,
+        ], key: 'serial'),
+        PlateTextGroup([
+          firstSerial + 3,
+          firstSerial + 4,
+          firstSerial + 5,
+        ], key: 'serialTail'),
       ],
     );
   }
 
   /// Every spec this package declares.
-  static final List<PlateSpec> allSpecs = List<PlateSpec>.unmodifiable(<PlateSpec>[
-    ...allCars,
-    ...allCarVariants,
-    ...allSerialPlates,
-    ...allDatedPlates,
-    bundeswehrFor(),
-  ]);
+  static final List<PlateSpec> allSpecs =
+      List<PlateSpec>.unmodifiable(<PlateSpec>[
+        ...allCars,
+        ...allCarVariants,
+        ...allSerialPlates,
+        ...allDatedPlates,
+        bundeswehrFor(),
+      ]);
 
   /// Legal (area-code length, group, serial length) tuples in stable order.
   static final List<(int, GermanIdentifierGroup, int)> _shapes = [
     for (var districtLetters = 1; districtLetters <= 3; districtLetters++)
       for (final group in GermanIdentifierGroup.values)
         for (var digits = group.minDigits; digits <= group.maxDigits; digits++)
-          if (districtLetters + group.letters + digits <= 8) (districtLetters, group, digits),
+          if (districtLetters + group.letters + digits <= 8)
+            (districtLetters, group, digits),
   ];
 
-  static String _idFor(int districtLetters, GermanIdentifierGroup group, int digits, String? kind) {
-    final shape = districtLetters == 2 && group == GermanIdentifierGroup.d && digits == 4
+  static String _idFor(
+    int districtLetters,
+    GermanIdentifierGroup group,
+    int digits,
+    String? kind,
+  ) {
+    final shape =
+        districtLetters == 2 && group == GermanIdentifierGroup.d && digits == 4
         ? ''
         : '.$districtLetters-${group.letters}-$digits';
     return kind == null ? 'de.car$shape' : 'de.car.$kind$shape';

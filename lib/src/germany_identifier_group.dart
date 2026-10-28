@@ -23,7 +23,10 @@ enum GermanIdentifierGroup {
   bool admitsDigits(int digits) => digits >= minDigits && digits <= maxDigits;
 
   /// Group for a given letter/digit count, or null if not issued.
-  static GermanIdentifierGroup? of({required int letters, required int digits}) {
+  static GermanIdentifierGroup? of({
+    required int letters,
+    required int digits,
+  }) {
     for (final group in values) {
       if (group.letters == letters && group.admitsDigits(digits)) return group;
     }
