@@ -79,6 +79,9 @@ class GermanPlates {
   static const Color _shortTermBand = Color(0xFFF0A800);
   static const Color _exportBand = Color(0xFFE62A22);
 
+  // TODO(py): [H2][D6] ImageProvider: reference the raster as package + path; importlib.resources.
+  // TODO(ts): [H2][D6] ImageProvider: reference the raster as package + path; import as asset URL.
+  // TODO(kt): [H2][D6] ImageProvider: reference the raster as package + path; Res/compose resources.
   static const AssetImage _stateSeal = AssetImage(
     'assets/de_state_seal.png',
     package: 'germany_plate',
@@ -339,6 +342,9 @@ class GermanPlates {
       decals: [
         if (inspectionSticker)
           PlateDecal(
+            // TODO(py): [H2][D6] ImageProvider: reference the raster as package + path; importlib.resources.
+            // TODO(ts): [H2][D6] ImageProvider: reference the raster as package + path; import as asset URL.
+            // TODO(kt): [H2][D6] ImageProvider: reference the raster as package + path; Res/compose resources.
             image: const AssetImage(
               'assets/de_inspection_sticker.png',
               package: 'germany_plate',

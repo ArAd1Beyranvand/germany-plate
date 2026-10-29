@@ -4,6 +4,9 @@
 /// and the advisory [GermanPlateValidator].
 library;
 
+// TODO(py): [D5] one module `plates.countries.germany`; assets via importlib.resources.
+// TODO(ts): [D5] one subpath export `./countries/germany`; tree-shakable.
+// TODO(kt): [D5] package `countries.germany` in the countries module.
 export 'src/german_plate_validator.dart';
 export 'src/germany_alphabets.dart';
 export 'src/germany_country.dart';
