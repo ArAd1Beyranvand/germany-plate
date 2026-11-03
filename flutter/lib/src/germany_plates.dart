@@ -64,10 +64,8 @@ class GermanPlates {
       _bandRowPitch = 31,
       _bandFirstRowTop = 10;
 
-  static const double _flagPanelWidth = 46;
-  static const double _flagGapAfter = 10;
-  static const double _hyphenWidth = 30, _hyphenGapAfter = 10;
-  static const double _tripleGap = 10;
+  static const double _flagPanelWidth = 46, _flagGapAfter = 10;
+  static const double _hyphenWidth = 30, _hyphenGapAfter = 10, _tripleGap = 10;
 
   /// Inks sampled from reference photos. The rim follows the ink, which is what
   /// [PlateSpec.inkOverride] substitutes. Black is the theme's own.
@@ -79,9 +77,6 @@ class GermanPlates {
   static const Color _shortTermBand = Color(0xFFF0A800);
   static const Color _exportBand = Color(0xFFE62A22);
 
-  // TODO(py): [H2][D6] ImageProvider: reference the raster as package + path; importlib.resources.
-  // TODO(ts): [H2][D6] ImageProvider: reference the raster as package + path; import as asset URL.
-  // TODO(kt): [H2][D6] ImageProvider: reference the raster as package + path; Res/compose resources.
   static const AssetImage _stateSeal = AssetImage(
     'assets/de_state_seal.png',
     package: 'germany_plate',
@@ -244,34 +239,54 @@ class GermanPlates {
     bool inspectionSticker = true,
     bool season = false,
   }) {
-    final districtRight =
-        _districtLeft + (districtLetters - 1) * _letterPitch + _letterWidth;
-    final decalLeft = districtRight + _decalGapBefore;
-    final identifierLeft = decalLeft + _decalSize + _decalGapAfter;
-    final identifierRight = identifierLetters == 0
-        ? identifierLeft - _serialGap
-        : identifierLeft +
-              (identifierLetters - 1) * _letterPitch +
-              _letterWidth;
-    final serialLeft = identifierRight + _serialGap;
-    final serialRight =
-        serialLeft + (serialDigits - 1) * _digitPitch + _digitWidth;
-    final charactersRight = suffix == null
-        ? serialRight
-        : serialRight + _letterWidth;
-    final seasonLeft = charactersRight + _seasonGap;
-    final seasonRight = seasonLeft + _seasonDigitPitch + _seasonDigitWidth;
-    final contentRight = season ? seasonRight : charactersRight;
-
-    final firstIdentifier = districtLetters;
-    final firstSerial = firstIdentifier + identifierLetters;
-    final firstSeason = firstSerial + serialDigits;
+    final PlateBox printed = _printedBox(0, _letterWidth);
+    PlateRowCells seasonCells(double top, String group) => PlateRowCells(
+      PlateAlphabet.latinDigits,
+      2,
+      cellWidth: _seasonDigitWidth,
+      pitch: _seasonDigitPitch,
+      top: top,
+      height: _seasonHeight,
+      group: group,
+    );
+    final List<PlateRowItem> items = <PlateRowItem>[
+      _letters(GermanAlphabets.districtLetters, districtLetters, 'district'),
+      const PlateRowGap(_decalGapBefore),
+      const PlateRowGap(_decalSize), // the stickers
+      const PlateRowGap(_decalGapAfter),
+      if (identifierLetters > 0) ...<PlateRowItem>[
+        _letters(PlateAlphabet.latinUppercase, identifierLetters, 'letters'),
+        const PlateRowGap(_serialGap),
+      ],
+      _digits(serialDigits, 'serial'),
+      if (suffix != null)
+        PlateRowText.styled(
+          suffix,
+          _letterWidth,
+          top: printed.top,
+          height: printed.height,
+          glyphHeight: _height,
+        ),
+      if (season) ...<PlateRowItem>[
+        const PlateRowGap(_seasonGap),
+        seasonCells(_seasonTop, 'seasonStart'),
+      ],
+    ];
+    final PlateRowLayout row = plateRow(
+      items,
+      left: _districtLeft,
+      top: _top,
+      height: _height,
+      pitch: _letterPitch,
+    );
+    final double decalLeft = row.lefts[2];
+    final double seasonLeft = row.lefts.last;
 
     return PlateSpec(
       id: id,
       country: GermanyCountry.germany,
       inkOverride: ink,
-      canvasWidth: contentRight + _rightMargin,
+      canvasWidth: row.right + _rightMargin,
       canvasHeight: 110,
       panel: const PlatePanel(box: PlateBox(0, 0, 56.4, 110)),
       background: const PlateSection.columns([
@@ -280,71 +295,30 @@ class GermanPlates {
       ]),
       textDirection: TextDirection.ltr,
       slots: [
-        ...plateRegister(
-          alphabet: GermanAlphabets.districtLetters,
-          count: districtLetters,
-          left: _districtLeft,
-          top: _top,
-          width: _letterWidth,
-          height: _height,
-          pitch: _letterPitch,
-        ),
-        ...plateRegister(
-          alphabet: PlateAlphabet.latinUppercase,
-          count: identifierLetters,
-          left: identifierLeft,
-          top: _top,
-          width: _letterWidth,
-          height: _height,
-          pitch: _letterPitch,
-        ),
-        ...plateRegister(
-          alphabet: PlateAlphabet.latinDigits,
-          count: serialDigits,
-          left: serialLeft,
-          top: _top,
-          width: _digitWidth,
-          height: _height,
-          pitch: _digitPitch,
-        ),
-        if (season) ...[
-          ...plateRegister(
-            alphabet: PlateAlphabet.latinDigits,
-            count: 2,
+        ...row.slots,
+        if (season)
+          ...plateRow(
+            [seasonCells(_seasonLowerTop, 'seasonEnd')],
             left: seasonLeft,
-            top: _seasonTop,
-            width: _seasonDigitWidth,
-            height: _seasonHeight,
-            pitch: _seasonDigitPitch,
-          ),
-          ...plateRegister(
-            alphabet: PlateAlphabet.latinDigits,
-            count: 2,
-            left: seasonLeft,
-            top: _seasonLowerTop,
-            width: _seasonDigitWidth,
-            height: _seasonHeight,
-            pitch: _seasonDigitPitch,
-          ),
-        ],
+            top: _top,
+            height: _height,
+            pitch: _letterPitch,
+          ).slots,
       ],
       rules: [
         if (season)
           PlateRule(
-            box: PlateBox(
+            box: PlateBox.fromLTRB(
               seasonLeft,
               _seasonRuleTop,
-              seasonRight - seasonLeft,
-              _seasonRuleHeight,
+              row.right,
+              _seasonRuleTop + _seasonRuleHeight,
             ),
           ),
       ],
       decals: [
         if (inspectionSticker)
           PlateDecal(
-            // TODO(py): [H2][D6] ImageProvider: reference the raster as package + path; importlib.resources.
-            // TODO(ts): [H2][D6] ImageProvider: reference the raster as package + path; import as asset URL.
-            // TODO(kt): [H2][D6] ImageProvider: reference the raster as package + path; Res/compose resources.
             image: const AssetImage(
               'assets/de_inspection_sticker.png',
               package: 'germany_plate',
@@ -361,32 +335,23 @@ class GermanPlates {
           ),
         ),
       ],
-      labels: [
-        if (suffix != null)
-          PlateLabel(
-            text: suffix,
-            box: _printedBox(serialRight, _letterWidth),
-            glyphHeight: _height,
-          ),
-      ],
-      textGroups: [
-        PlateTextGroup([
-          for (var i = 0; i < districtLetters; i++) i,
-        ], key: 'district'),
-        PlateTextGroup([
-          for (var i = 0; i < identifierLetters; i++) firstIdentifier + i,
-        ], key: 'letters'),
-        PlateTextGroup([
-          for (var i = 0; i < serialDigits; i++) firstSerial + i,
-        ], key: 'serial'),
-        if (season) ...[
-          PlateTextGroup([firstSeason, firstSeason + 1], key: 'seasonStart'),
-          PlateTextGroup([firstSeason + 2, firstSeason + 3], key: 'seasonEnd'),
-        ],
-      ],
+      labels: row.labels,
       resolveRegion: GermanyRegions.captionOf,
     );
   }
+
+  /// [count] letter cells at the letter pitch, keyed [group].
+  static PlateRowCells _letters(PlateAlphabet a, int count, String group) =>
+      PlateRowCells(a, count, cellWidth: _letterWidth, group: group);
+
+  /// [count] digit cells at the digit pitch, keyed [group].
+  static PlateRowCells _digits(int count, String group) => PlateRowCells(
+    PlateAlphabet.latinDigits,
+    count,
+    cellWidth: _digitWidth,
+    pitch: _digitPitch,
+    group: group,
+  );
 
   /// Suffix for [spec] ('H' historic, 'E' electric, or ''). Not in [PlateSpec.slots].
   static String suffixOf(PlateSpec spec) {
@@ -505,24 +470,27 @@ class GermanPlates {
     required Color band,
   }) {
     _checkDistrictLetters(districtLetters);
-    const serialDigits = 5;
-    final districtRight =
-        _bareLeft + (districtLetters - 1) * _letterPitch + _letterWidth;
-    final decalLeft = districtRight + _decalGapBefore;
-    final serialLeft = decalLeft + _decalSize + _decalGapAfter;
-    final serialRight =
-        serialLeft + (serialDigits - 1) * _digitPitch + _digitWidth;
-    final bandLeft = serialRight + _bandGap;
-    final canvasWidth = bandLeft + _bandWidth;
-    final dateLeft =
-        bandLeft + (_bandWidth - (_bandDigitPitch + _bandDigitWidth)) / 2;
-
-    final firstDate = districtLetters + serialDigits;
+    final PlateRowLayout row = plateRow(
+      <PlateRowItem>[
+        _letters(GermanAlphabets.districtLetters, districtLetters, 'district'),
+        const PlateRowGap(_decalGapBefore),
+        const PlateRowGap(_decalSize), // the seal
+        const PlateRowGap(_decalGapAfter),
+        _digits(5, 'serial'),
+        const PlateRowGap(_bandGap),
+      ],
+      left: _bareLeft,
+      top: _top,
+      height: _height,
+      pitch: _letterPitch,
+    );
+    final double decalLeft = row.lefts[2], bandLeft = row.right;
+    final double dateCentre = bandLeft + _bandWidth / 2;
 
     return PlateSpec(
       id: 'de.$kind${districtLetters == 2 ? '' : '.$districtLetters'}',
       country: GermanyCountry.germany,
-      canvasWidth: canvasWidth,
+      canvasWidth: bandLeft + _bandWidth,
       canvasHeight: 110,
       noPanel: true,
       panel: const PlatePanel(box: PlateBox(0, 0, 0, 110)),
@@ -533,51 +501,33 @@ class GermanPlates {
       ]),
       textDirection: TextDirection.ltr,
       slots: [
-        ...plateRegister(
-          alphabet: GermanAlphabets.districtLetters,
-          count: districtLetters,
-          left: _bareLeft,
-          top: _top,
-          width: _letterWidth,
-          height: _height,
-          pitch: _letterPitch,
-        ),
-        ...plateRegister(
-          alphabet: PlateAlphabet.latinDigits,
-          count: serialDigits,
-          left: serialLeft,
-          top: _top,
-          width: _digitWidth,
-          height: _height,
-          pitch: _digitPitch,
-        ),
-        for (var row = 0; row < 3; row++)
-          ...plateRegister(
-            alphabet: PlateAlphabet.latinDigits,
-            count: 2,
-            left: dateLeft,
-            top: _bandFirstRowTop + row * _bandRowPitch,
-            width: _bandDigitWidth,
+        ...row.slots,
+        for (final (int r, String key) in const [
+          (0, 'expiryDay'),
+          (1, 'expiryMonth'),
+          (2, 'expiryYear'),
+        ])
+          ...plateRow(
+            [
+              PlateRowCells(
+                PlateAlphabet.latinDigits,
+                2,
+                cellWidth: _bandDigitWidth,
+                pitch: _bandDigitPitch,
+                group: key,
+              ),
+            ],
+            centre: dateCentre,
+            top: _bandFirstRowTop + r * _bandRowPitch,
             height: _bandRowHeight,
             pitch: _bandDigitPitch,
-          ),
+          ).slots,
       ],
       decals: [
         PlateDecal(
           image: _stateSeal,
           box: PlateBox(decalLeft, 36, _decalSize, _decalSize),
         ),
-      ],
-      textGroups: [
-        PlateTextGroup([
-          for (var i = 0; i < districtLetters; i++) i,
-        ], key: 'district'),
-        PlateTextGroup([
-          for (var i = 0; i < serialDigits; i++) districtLetters + i,
-        ], key: 'serial'),
-        PlateTextGroup([firstDate, firstDate + 1], key: 'expiryDay'),
-        PlateTextGroup([firstDate + 2, firstDate + 3], key: 'expiryMonth'),
-        PlateTextGroup([firstDate + 4, firstDate + 5], key: 'expiryYear'),
       ],
       resolveRegion: GermanyRegions.captionOf,
     );
@@ -587,21 +537,32 @@ class GermanPlates {
   /// No inspection sticker. [GermanBundeswehrValidator] enforces the `Y`.
   static PlateSpec bundeswehrFor({int districtLetters = 1}) {
     _checkDistrictLetters(districtLetters);
-    final districtLeft = _flagPanelWidth + _flagGapAfter;
-    final districtRight =
-        districtLeft + (districtLetters - 1) * _letterPitch + _letterWidth;
-    final hyphenRight = districtRight + _hyphenWidth;
-    final serialLeft = hyphenRight + _hyphenGapAfter;
-    final firstTripleRight = serialLeft + 2 * _digitPitch + _digitWidth;
-    final secondTripleLeft = firstTripleRight + _tripleGap;
-    final secondTripleRight = secondTripleLeft + 2 * _digitPitch + _digitWidth;
-
-    final firstSerial = districtLetters;
+    final PlateBox printed = _printedBox(0, _hyphenWidth);
+    final PlateRowLayout row = plateRow(
+      <PlateRowItem>[
+        _letters(GermanAlphabets.districtLetters, districtLetters, 'district'),
+        PlateRowText.styled(
+          '-',
+          _hyphenWidth,
+          top: printed.top,
+          height: printed.height,
+          glyphHeight: _height,
+        ),
+        const PlateRowGap(_hyphenGapAfter),
+        _digits(3, 'serial'),
+        const PlateRowGap(_tripleGap),
+        _digits(3, 'serialTail'),
+      ],
+      left: _flagPanelWidth + _flagGapAfter,
+      top: _top,
+      height: _height,
+      pitch: _letterPitch,
+    );
 
     return PlateSpec(
       id: 'de.bundeswehr${districtLetters == 1 ? '' : '.$districtLetters'}',
       country: GermanyCountry.bundeswehr,
-      canvasWidth: secondTripleRight + _rightMargin,
+      canvasWidth: row.right + _rightMargin,
       canvasHeight: 110,
       panel: const PlatePanel(
         box: PlateBox(0, 0, _flagPanelWidth, 110),
@@ -612,63 +573,14 @@ class GermanPlates {
         PlatePart(PlateSection.plain),
       ]),
       textDirection: TextDirection.ltr,
-      slots: [
-        ...plateRegister(
-          alphabet: GermanAlphabets.districtLetters,
-          count: districtLetters,
-          left: districtLeft,
-          top: _top,
-          width: _letterWidth,
-          height: _height,
-          pitch: _letterPitch,
-        ),
-        ...plateRegister(
-          alphabet: PlateAlphabet.latinDigits,
-          count: 3,
-          left: serialLeft,
-          top: _top,
-          width: _digitWidth,
-          height: _height,
-          pitch: _digitPitch,
-        ),
-        ...plateRegister(
-          alphabet: PlateAlphabet.latinDigits,
-          count: 3,
-          left: secondTripleLeft,
-          top: _top,
-          width: _digitWidth,
-          height: _height,
-          pitch: _digitPitch,
-        ),
-      ],
+      slots: row.slots,
       decals: [
         PlateDecal(
           image: _stateSeal,
-          box: PlateBox(districtRight, 60, _decalSize, _decalSize),
+          box: PlateBox(row.lefts[1], 60, _decalSize, _decalSize),
         ),
       ],
-      labels: [
-        PlateLabel(
-          text: '-',
-          box: _printedBox(districtRight, _hyphenWidth),
-          glyphHeight: _height,
-        ),
-      ],
-      textGroups: [
-        PlateTextGroup([
-          for (var i = 0; i < districtLetters; i++) i,
-        ], key: 'district'),
-        PlateTextGroup([
-          firstSerial,
-          firstSerial + 1,
-          firstSerial + 2,
-        ], key: 'serial'),
-        PlateTextGroup([
-          firstSerial + 3,
-          firstSerial + 4,
-          firstSerial + 5,
-        ], key: 'serialTail'),
-      ],
+      labels: row.labels,
     );
   }
 

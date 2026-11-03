@@ -25,9 +25,6 @@ const Set<String> _forbiddenLetterPairs = {
 /// Digit strings commonly barred for the same reason.
 const Set<String> _forbiddenNumbers = {'88', '18', '14'};
 
-// TODO(py): [H9] Python re: \d/\w match Unicode; keep explicit [0-9]/[A-Z] classes (or re.ASCII).
-// TODO(ts): [H9] same flavour as Dart; port as is, cover accept/reject in the vectors (D9).
-// TODO(kt): [H9] Regex engine differs per target (JVM/JS/Native): keep to portable syntax.
 /// The area code may carry an umlaut; the identifier may not. An umlaut in the
 /// identifier is the conventional marker of a deliberately fictitious plate, so
 /// the asymmetry between these two patterns is the rule, not an oversight.
@@ -51,15 +48,9 @@ PlateValidation? _districtAndSerialError(String district, String serial) {
   return null;
 }
 
-// TODO(py): [D4-code] hand-port; reason strings are the contract, keep them byte-identical.
-// TODO(ts): [D4-code] hand-port; reason strings are the contract, keep them byte-identical.
-// TODO(kt): [D4-code] hand-port; reason strings are the contract, keep them byte-identical.
 /// Validates a German car-plate district code + identifier pair.
 class GermanPlateValidator extends GatedPlateValidator {
-  const GermanPlateValidator();
-
-  @override
-  String get gateGroup => 'letters';
+  const GermanPlateValidator() : super('letters');
 
   /// Validates groups: district, letters, and serial. Quiet while letters are
   /// empty (do not flag incomplete plates).
@@ -297,10 +288,7 @@ class GermanDatedPlateValidator extends GatedPlateValidator {
 
 /// Validates a Bundeswehr `Y` plate: `Y` in the area code, then six digits.
 class GermanBundeswehrValidator extends GatedPlateValidator {
-  const GermanBundeswehrValidator();
-
-  @override
-  String get gateGroup => 'serialTail';
+  const GermanBundeswehrValidator() : super('serialTail');
 
   @override
   PlateValidation judge(PlateEntry entry) {
