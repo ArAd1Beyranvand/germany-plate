@@ -1,6 +1,6 @@
 name: germany_plate
 description: "Germany's licence plates for the plate_core library — the country panel, the car spec with its EU stickers, and the German plate validator."
-version: 0.2.0
+version: 0.2.1
 repository: https://github.com/ArAd1Beyranvand/germany-plate/tree/main/flutter
 resolution: workspace
 

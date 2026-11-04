@@ -1,3 +1,7 @@
+## 0.2.1
+
+- Version bump; 0.2.0 was already published.
+
 ## 0.2.0
 
 - **The serial is a register, not four rectangles.** `GermanPlates.car`'s four
