@@ -1,4 +1,4 @@
-import { GatedPlateValidator, type PlateEntry, type PlateValidation, invalid, isDigits, isDigitsOfLength, valid, isLetters } from '../../core/validators/plate_validator';
+import { GatedPlateValidator, type PlateEntry, type PlateValidation, invalid, isDigits, isDigitsOfLength, valid, isLetters } from 'plate_core/core/validators/plate_validator';
 
 /**
  * Validates a German (Kennzeichen) car plate. Demo-scoped: checks format and
